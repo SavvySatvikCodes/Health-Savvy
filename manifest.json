@@ -2,21 +2,24 @@
   "name": "Health Savvy",
   "short_name": "HealthSavvy",
   "description": "Track calories, protein, workouts and food budget",
-  "start_url": "/",
+  "start_url": "/Health-Savvy/",
+  "scope": "/Health-Savvy/",
   "display": "standalone",
   "background_color": "#0a0a0f",
   "theme_color": "#0a0a0f",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192x192/7fff6e/000000?text=HS",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzBhMGEwZiIvPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTAwIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTExMTE4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBhMGEwZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPCEtLSBIZWFydCB3aXRoIGxpZ2h0bmluZyBib2x0IC0tPgogIDxwYXRoIGQ9Ik0yNTYgMzkwIEMyNTYgMzkwIDEyMCAzMDAgMTIwIDIxMCBDMTIwIDE2NSAxNTUgMTMwIDIwMCAxMzAgQzIyNSAxMzAgMjQ4IDE0MyAyNTYgMTYwIEMyNjQgMTQzIDI4NyAxMzAgMzEyIDEzMCBDMzU3IDEzMCAzOTIgMTY1IDM5MiAyMTAgQzM5MiAzMDAgMjU2IDM5MCAyNTYgMzkwWiIgZmlsbD0iIzFhMWEyNCIgc3Ryb2tlPSIjN2ZmZjZlIiBzdHJva2Utd2lkdGg9IjYiLz4KICA8IS0tIExpZ2h0bmluZyBib2x0IC0tPgogIDxwYXRoIGQ9Ik0yNzIgMTkwIEwyNDAgMjU1IEwyNjIgMjU1IEwyNDQgMzIwIEwyODggMjQ1IEwyNjUgMjQ1IEwyODQgMTkwWiIgZmlsbD0iIzdmZmY2ZSIvPgo8L3N2Zz4=",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://via.placeholder.com/512x512/7fff6e/000000?text=HS",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzBhMGEwZiIvPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTAwIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTExMTE4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBhMGEwZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPCEtLSBIZWFydCB3aXRoIGxpZ2h0bmluZyBib2x0IC0tPgogIDxwYXRoIGQ9Ik0yNTYgMzkwIEMyNTYgMzkwIDEyMCAzMDAgMTIwIDIxMCBDMTIwIDE2NSAxNTUgMTMwIDIwMCAxMzAgQzIyNSAxMzAgMjQ4IDE0MyAyNTYgMTYwIEMyNjQgMTQzIDI4NyAxMzAgMzEyIDEzMCBDMzU3IDEzMCAzOTIgMTY1IDM5MiAyMTAgQzM5MiAzMDAgMjU2IDM5MCAyNTYgMzkwWiIgZmlsbD0iIzFhMWEyNCIgc3Ryb2tlPSIjN2ZmZjZlIiBzdHJva2Utd2lkdGg9IjYiLz4KICA8IS0tIExpZ2h0bmluZyBib2x0IC0tPgogIDxwYXRoIGQ9Ik0yNzIgMTkwIEwyNDAgMjU1IEwyNjIgMjU1IEwyNDQgMzIwIEwyODggMjQ1IEwyNjUgMjQ1IEwyODQgMTkwWiIgZmlsbD0iIzdmZmY2ZSIvPgo8L3N2Zz4=",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }

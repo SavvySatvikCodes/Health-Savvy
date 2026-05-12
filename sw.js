@@ -1,8 +1,8 @@
 const CACHE_NAME = 'health-savvy-v1';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  '/Health-Savvy/',
+  '/Health-Savvy/index.html',
+  '/Health-Savvy/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
