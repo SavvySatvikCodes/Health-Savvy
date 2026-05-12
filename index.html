@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Health Savvy</title>
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Health Savvy" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a24;
+      --border: rgba(255,255,255,0.07);
+      --accent: #7fff6e;
+      --accent2: #6edfff;
+      --accent3: #ff6e9c;
+      --text: #f0f0f5;
+      --muted: #666680;
+      --danger: #ff4f4f;
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-display);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* AUTH SCREEN */
+    #auth-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: radial-gradient(ellipse at 30% 20%, rgba(127,255,110,0.06) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 80%, rgba(110,223,255,0.06) 0%, transparent 60%),
+                  var(--bg);
+    }
+
+    .auth-logo {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.25rem;
+    }
+
+    .auth-logo span { color: var(--accent); }
+
+    .auth-tagline {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      margin-bottom: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 0.6rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .input-group {
+      margin-bottom: 1rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus { border-color: var(--accent); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .auth-error {
+      color: var(--danger);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+
+    /* MAIN APP */
+    #app { display: none; min-height: 100vh; padding-bottom: 80px; }
+
+    /* TOP BAR */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar-logo { font-size: 1.2rem; font-weight: 800; }
+    .topbar-logo span { color: var(--accent); }
+
+    .topbar-date {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .btn-signout {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.4rem 0.75rem;
+      cursor: pointer;
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(17,17,24,0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 0.75rem 0.5rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      transition: color 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-btn.active { color: var(--accent); }
+    .nav-icon { font-size: 1.2rem; }
+
+    /* PAGES */
+    .page { display: none; padding: 1.25rem; }
+    .page.active { display: block; }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    /* DASHBOARD */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 0.35rem;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .stat-unit {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      margin-left: 2px;
+    }
+
+    .stat-sub {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.5s ease;
+    }
+
+    /* FOOD LOG */
+    .meal-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .meal-entry:last-child { border-bottom: none; }
+
+    .meal-name { font-size: 0.9rem; font-weight: 600; }
+
+    .meal-meta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .meal-delete {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.25rem;
+    }
+
+    .meal-delete:hover { color: var(--danger); }
+
+    /* ADD FOOD MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      align-items: flex-end;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 1.5rem;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+
+    .ingredient-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .ingredient-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.75rem;
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s;
+    }
+
+    .ingredient-btn.selected {
+      border-color: var(--accent);
+      background: rgba(127,255,110,0.08);
+    }
+
+    .ingredient-meta {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .quantity-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .quantity-row label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .quantity-row input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.75rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .custom-food-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .modal-actions { display: flex; gap: 0.75rem; }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 0.75rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: var(--font-display);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-add {
+      flex: 2;
+      padding: 0.75rem;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* SECTION HEADER */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .btn-icon {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    /* GYM LOG */
+    .workout-entry {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .workout-entry:last-child { border-bottom: none; }
+
+    .workout-name { font-size: 0.9rem; font-weight: 600; }
+
+    .workout-sets {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    /* BUDGET */
+    .budget-bar-wrap {
+      margin: 0.75rem 0;
+    }
+
+    .budget-numbers {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .expense-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .expense-entry:last-child { border-bottom: none; }
+
+    .expense-name { font-size: 0.85rem; font-weight: 600; }
+
+    .expense-meta {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+
+    .expense-amount {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* AI CHAT */
+    .chat-messages {
+      min-height: 300px;
+      max-height: 50vh;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .chat-msg {
+      max-width: 85%;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .chat-msg.user {
+      background: var(--accent);
+      color: #000;
+      align-self: flex-end;
+      font-weight: 600;
+    }
+
+    .chat-msg.ai {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      align-self: flex-start;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .chat-msg.ai.loading { color: var(--muted); }
+
+    .chat-input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      outline: none;
+      resize: none;
+    }
+
+    .chat-input:focus { border-color: var(--accent); }
+
+    .btn-send {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    /* WORKOUT MODAL */
+    .workout-modal .input-group input {
+      margin-bottom: 0;
+    }
+
+    .sets-builder { margin: 0.75rem 0; }
+
+    .set-row {
+      display: grid;
+      grid-template-columns: auto 1fr 1fr;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .set-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      width: 40px;
+    }
+
+    .set-row input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 0.6rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      outline: none;
+      width: 100%;
+    }
+
+    .btn-add-set {
+      background: none;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.4rem;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-add-set:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* TODAY WORKOUT DISPLAY */
+    .workout-day-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tab {
+      padding: 0.4rem 0.85rem;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      background: var(--surface2);
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 99px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      background: rgba(127,255,110,0.12);
+      color: var(--accent);
+      margin-left: 0.4rem;
+    }
+
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+    }
+
+    select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.75rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      outline: none;
+      width: 100%;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1rem 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .loading-dot { animation: pulse 1.2s infinite; }
+  </style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-logo">Health<span>Savvy</span></div>
+  <div class="auth-tagline">// track. train. thrive.</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+    <div id="login-form">
+      <div class="input-group">
+        <label>EMAIL</label>
+        <input type="email" id="login-email" placeholder="you@email.com" />
+      </div>
+      <div class="input-group">
+        <label>PASSWORD</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <button class="btn-primary" onclick="handleLogin()">Sign In</button>
+    </div>
+    <div id="signup-form" style="display:none">
+      <div class="input-group">
+        <label>NAME</label>
+        <input type="text" id="signup-name" placeholder="Satvik" />
+      </div>
+      <div class="input-group">
+        <label>EMAIL</label>
+        <input type="email" id="signup-email" placeholder="you@email.com" />
+      </div>
+      <div class="input-group">
+        <label>PASSWORD</label>
+        <input type="password" id="signup-password" placeholder="min 6 characters" />
+      </div>
+      <button class="btn-primary" onclick="handleSignup()">Create Account</button>
+    </div>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="topbar">
+    <div>
+      <div class="topbar-logo">Health<span>Savvy</span></div>
+      <div class="topbar-date" id="topbar-date"></div>
+    </div>
+    <button class="btn-signout" onclick="handleSignout()">Sign out</button>
+  </div>
+
+  <!-- DASHBOARD PAGE -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-title">Today <span class="chip" id="dash-day-chip">MON</span></div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">CALORIES</div>
+        <div class="stat-value" id="dash-cal">0<span class="stat-unit">kcal</span></div>
+        <div class="stat-sub">of 2200 goal</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="cal-bar" style="width:0%;background:var(--accent)"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">PROTEIN</div>
+        <div class="stat-value" id="dash-prot">0<span class="stat-unit">g</span></div>
+        <div class="stat-sub">of 135g goal</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="prot-bar" style="width:0%;background:var(--accent2)"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">SPENT TODAY</div>
+        <div class="stat-value" id="dash-spend">$0<span class="stat-unit"></span></div>
+        <div class="stat-sub" id="dash-month-spend">$0 this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">WORKOUT</div>
+        <div class="stat-value" id="dash-workout" style="font-size:0.9rem;padding-top:0.25rem">—</div>
+        <div class="stat-sub" id="dash-workout-sub"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">TODAY'S SCHEDULE</div>
+      <div id="today-schedule" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);line-height:1.8"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">RECENT MEALS</div>
+      <div id="dash-meals-preview"></div>
+    </div>
+  </div>
+
+  <!-- FOOD PAGE -->
+  <div class="page" id="page-food">
+    <div class="page-title">Food Log</div>
+
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchFoodTab('log')">Log</button>
+      <button class="tab" onclick="switchFoodTab('budget')">Budget</button>
+    </div>
+
+    <!-- FOOD LOG TAB -->
+    <div id="food-log-tab">
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">Today's Meals</div>
+          <button class="btn-icon" onclick="openAddFood()">+</button>
+        </div>
+        <div id="meals-list"><div class="empty-state">No meals logged yet.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">TODAY'S TOTALS</div>
+        <div style="display:flex;gap:1.5rem;font-family:var(--font-mono)">
+          <div>
+            <div style="font-size:1.4rem;font-weight:800" id="total-cal-display">0</div>
+            <div style="font-size:0.65rem;color:var(--muted)">kcal / 2200</div>
+          </div>
+          <div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--accent2)" id="total-prot-display">0g</div>
+            <div style="font-size:0.65rem;color:var(--muted)">protein / 135g</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUDGET TAB -->
+    <div id="food-budget-tab" style="display:none">
+      <div class="card">
+        <div class="card-title">MONTHLY BUDGET</div>
+        <div class="budget-bar-wrap">
+          <div class="budget-numbers">
+            <span id="budget-spent">$0 spent</span>
+            <span id="budget-left">$250 left</span>
+          </div>
+          <div class="progress-bar" style="height:10px">
+            <div class="progress-fill" id="budget-bar" style="width:0%;background:var(--accent)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">Expenses</div>
+          <button class="btn-icon" onclick="openAddExpense()">+</button>
+        </div>
+        <div id="expense-list"><div class="empty-state">No expenses logged.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GYM PAGE -->
+  <div class="page" id="page-gym">
+    <div class="page-title">Gym Log</div>
+
+    <div class="card">
+      <div class="workout-day-label" id="gym-day-label">MONDAY — PUSH DAY</div>
+      <div class="card-title">RECOMMENDED TODAY</div>
+      <div id="gym-recommended" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);line-height:2"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-header">
+        <div class="section-title">Today's Log</div>
+        <button class="btn-icon" onclick="openAddWorkout()">+</button>
+      </div>
+      <div id="workout-list"><div class="empty-state">No exercises logged yet.</div></div>
+    </div>
+  </div>
+
+  <!-- AI PAGE -->
+  <div class="page" id="page-ai">
+    <div class="page-title">AI Assistant</div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border)">
+        <div style="font-size:0.7rem;font-family:var(--font-mono);color:var(--muted)">Knows your goals, ingredients, budget, schedule. Ask anything.</div>
+      </div>
+      <div style="padding:1rem">
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-msg ai">Hey! I'm your Health Savvy assistant. I know your full profile: 76kg, 174cm, targeting 2200 kcal and 135g protein daily, $250/month food budget. Ask me for meal recommendations, workout tips, or tell me about any changes to your plan.</div>
+        </div>
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ask me anything..." onkeydown="handleChatKey(event)"></textarea>
+          <button class="btn-send" onclick="sendChat()">↑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="switchPage('dashboard', this)">
+      <span class="nav-icon">⚡</span>Today
+    </button>
+    <button class="nav-btn" onclick="switchPage('food', this)">
+      <span class="nav-icon">🥗</span>Food
+    </button>
+    <button class="nav-btn" onclick="switchPage('gym', this)">
+      <span class="nav-icon">💪</span>Gym
+    </button>
+    <button class="nav-btn" onclick="switchPage('ai', this)">
+      <span class="nav-icon">✦</span>AI
+    </button>
+  </div>
+</div>
+
+<!-- ADD FOOD MODAL -->
+<div class="modal-overlay" id="add-food-modal">
+  <div class="modal">
+    <div class="modal-title">Log a Meal</div>
+
+    <div style="margin-bottom:0.75rem">
+      <div class="card-title">MEAL TYPE</div>
+      <select id="meal-type">
+        <option>Breakfast</option>
+        <option>Lunch</option>
+        <option>Dinner</option>
+        <option>Snack</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:0.75rem">
+      <div class="card-title">SELECT INGREDIENT</div>
+      <div class="ingredient-grid" id="ingredient-grid"></div>
+    </div>
+
+    <div id="quantity-section" style="display:none">
+      <div class="quantity-row">
+        <label id="quantity-label">AMOUNT (g)</label>
+        <input type="number" id="quantity-input" value="100" min="1" oninput="updateFoodPreview()" />
+      </div>
+      <div id="food-preview" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem"></div>
+    </div>
+
+    <hr class="divider" />
+    <div class="card-title">OR ADD CUSTOM ITEM</div>
+    <div class="input-group">
+      <label>ITEM NAME</label>
+      <input type="text" id="custom-name" placeholder="e.g. Pizza slice" />
+    </div>
+    <div class="custom-food-row">
+      <div class="input-group" style="margin:0">
+        <label>KCAL</label>
+        <input type="number" id="custom-cal" placeholder="300" />
+      </div>
+      <div class="input-group" style="margin:0">
+        <label>PROTEIN (g)</label>
+        <input type="number" id="custom-prot" placeholder="15" />
+      </div>
+      <div class="input-group" style="margin:0">
+        <label>COST ($)</label>
+        <input type="number" id="custom-cost" placeholder="0" step="0.01" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('add-food-modal')">Cancel</button>
+      <button class="btn-add" onclick="logFood()">Add to Log</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD EXPENSE MODAL -->
+<div class="modal-overlay" id="add-expense-modal">
+  <div class="modal">
+    <div class="modal-title">Log Expense</div>
+    <div class="input-group">
+      <label>DESCRIPTION</label>
+      <input type="text" id="expense-name-input" placeholder="e.g. Pizza with friends" />
+    </div>
+    <div class="input-group">
+      <label>AMOUNT ($)</label>
+      <input type="number" id="expense-amount-input" placeholder="12.50" step="0.01" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('add-expense-modal')">Cancel</button>
+      <button class="btn-add" onclick="logExpense()">Add Expense</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD WORKOUT MODAL -->
+<div class="modal-overlay workout-modal" id="add-workout-modal">
+  <div class="modal">
+    <div class="modal-title">Log Exercise</div>
+    <div class="input-group">
+      <label>EXERCISE NAME</label>
+      <input type="text" id="exercise-name" placeholder="e.g. Bench Press" />
+    </div>
+    <div class="sets-builder" id="sets-builder">
+      <div class="card-title">SETS</div>
+    </div>
+    <button class="btn-add-set" onclick="addSetRow()">+ Add Set</button>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('add-workout-modal')">Cancel</button>
+      <button class="btn-add" onclick="logWorkout()">Log Exercise</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE + APP SCRIPT -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── FIREBASE CONFIG ──────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyCMw854CQR6_tafEXNA_Ulj4HgtMGtv7EQ",
+  authDomain: "health-savvy-d75d8.firebaseapp.com",
+  projectId: "health-savvy-d75d8",
+  storageBucket: "health-savvy-d75d8.firebasestorage.app",
+  messagingSenderId: "862134254339",
+  appId: "1:862134254339:web:9a81b49caf84d17d460736"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── INGREDIENT DATABASE ──────────────────────────────────────────
+// per 100g unless noted
+const INGREDIENTS = [
+  { id: "chicken", name: "Chicken Breast", cal: 165, protein: 31, unit: "g", defaultQty: 233, cost_per_100: 1.36 },
+  { id: "eggs", name: "Egg", cal: 155, protein: 13, unit: "each", defaultQty: 1, calPer: 62, proteinPer: 5.2, costPer: 0.306 },
+  { id: "oats", name: "Oats", cal: 350, protein: 15, unit: "g", defaultQty: 80, cost_per_100: 0.28 },
+  { id: "milk", name: "Milk (2%)", cal: 52, protein: 3.6, unit: "ml", defaultQty: 250, cost_per_100: 0.16 },
+  { id: "paneer", name: "Paneer", cal: 200, protein: 11, unit: "g", defaultQty: 100, cost_per_100: 1.59 },
+  { id: "bread", name: "Bread (slice)", cal: 190, protein: 8, unit: "each", defaultQty: 1, calPer: 190, proteinPer: 8, costPer: 0.25 },
+  { id: "roti", name: "Roti", cal: 130, protein: 4, unit: "each", defaultQty: 1, calPer: 130, proteinPer: 4, costPer: 0.26 },
+  { id: "cream_cheese", name: "Cream Cheese", cal: 267, protein: 6.7, unit: "g", defaultQty: 30, cost_per_100: 1.17 },
+  { id: "rice", name: "Basmati Rice", cal: 365, protein: 8, unit: "g", defaultQty: 100, cost_per_100: 0.44 },
+  { id: "gravy", name: "Butter Chicken Sauce", cal: 96, protein: 1.6, unit: "ml", defaultQty: 125, cost_per_100: 0.87 },
+  { id: "apple", name: "Apple", cal: 52, protein: 0.3, unit: "each", defaultQty: 1, calPer: 80, proteinPer: 0.5, costPer: 0.40 },
+  { id: "cucumber", name: "Cucumber", cal: 15, protein: 0.6, unit: "g", defaultQty: 100, cost_per_100: 0.094 },
+];
+
+// ── WEEKLY SCHEDULE ──────────────────────────────────────────────
+const SCHEDULE = {
+  0: { label: "SUNDAY — REST DAY", gym: "Full rest. Let your body recover.", run: false, swim: false },
+  1: { label: "MONDAY — PUSH DAY", gym: "Chest, Shoulders, Triceps — 75 min", run: false, swim: false,
+       exercises: ["Bench Press 4x8", "Overhead Press 3x10", "Incline Dumbbell Press 3x10", "Lateral Raises 3x15", "Tricep Pushdown 3x12"] },
+  2: { label: "TUESDAY — PULL + RUN", gym: "Back, Biceps — 55 min + 20 min run", run: true, swim: false,
+       exercises: ["Pull-ups / Lat Pulldown 4x8", "Seated Cable Row 3x10", "Face Pulls 3x15", "Hammer Curls 3x12", "Barbell Curl 3x10"] },
+  3: { label: "WEDNESDAY — LEGS + SWIM", gym: "Legs, Core — 75 min + evening swim", run: false, swim: true,
+       exercises: ["Squat 4x8", "Romanian Deadlift 3x10", "Leg Press 3x12", "Calf Raises 4x15", "Plank 3x45sec", "Hanging Knee Raises 3x15"] },
+  4: { label: "THURSDAY — PUSH + RUN", gym: "Chest, Shoulders, Triceps (varied) — 55 min + 20 min run", run: true, swim: false,
+       exercises: ["Dumbbell Press 4x10", "Arnold Press 3x10", "Cable Flyes 3x12", "Tricep Dips 3x12", "Front Raises 3x12"] },
+  5: { label: "FRIDAY — PULL + SWIM", gym: "Back, Biceps (varied) — 75 min + evening swim", run: false, swim: true,
+       exercises: ["Deadlift 3x5", "Single-arm Row 3x10", "Lat Pulldown 3x12", "Preacher Curl 3x10", "Reverse Curl 3x12"] },
+  6: { label: "SATURDAY — FULL BODY + RUN", gym: "Full body light — 55 min + 20 min run", run: true, swim: false,
+       exercises: ["Goblet Squat 3x12", "Push-ups 3x15", "Bent-over Row 3x12", "Dumbbell Curl 3x12", "Core circuit 3 rounds"] },
+};
+
+// ── STATE ────────────────────────────────────────────────────────
+let currentUser = null;
+let todayMeals = [];
+let todayWorkouts = [];
+let monthExpenses = [];
+let selectedIngredient = null;
+let setCount = 0;
+let chatHistory = [];
+
+// ── AUTH ─────────────────────────────────────────────────────────
+window.switchAuthTab = (tab) => {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'signup'));
+  });
+  document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
+};
+
+window.handleLogin = async () => {
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    document.getElementById('auth-error').textContent = e.message;
+  }
+};
+
+window.handleSignup = async () => {
+  const name = document.getElementById('signup-name').value;
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(cred.user, { displayName: name });
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      name, email,
+      calorieGoal: 2200, proteinGoal: 135, budgetMonthly: 250,
+      createdAt: new Date().toISOString()
+    });
+  } catch (e) {
+    document.getElementById('auth-error').textContent = e.message;
+  }
+};
+
+window.handleSignout = () => signOut(auth);
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+  } else {
+    currentUser = null;
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// ── INIT ─────────────────────────────────────────────────────────
+async function initApp() {
+  updateTopbarDate();
+  buildIngredientGrid();
+  addSetRow();
+  await loadTodayData();
+  await loadMonthExpenses();
+  renderDashboard();
+  renderMealsList();
+  renderWorkoutList();
+  renderGymPage();
+  renderBudget();
+}
+
+function updateTopbarDate() {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('topbar-date').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+  const dayAbbr = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  document.getElementById('dash-day-chip').textContent = dayAbbr[now.getDay()];
+}
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function monthKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+// ── DATA LOADING ─────────────────────────────────────────────────
+async function loadTodayData() {
+  if (!currentUser) return;
+  const key = todayKey();
+
+  // meals
+  const mq = query(collection(db, 'meals'),
+    where('uid', '==', currentUser.uid),
+    where('date', '==', key),
+    orderBy('ts', 'asc'));
+  const ms = await getDocs(mq);
+  todayMeals = ms.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  // workouts
+  const wq = query(collection(db, 'workouts'),
+    where('uid', '==', currentUser.uid),
+    where('date', '==', key));
+  const ws = await getDocs(wq);
+  todayWorkouts = ws.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function loadMonthExpenses() {
+  if (!currentUser) return;
+  const mk = monthKey();
+  const eq = query(collection(db, 'expenses'),
+    where('uid', '==', currentUser.uid),
+    where('month', '==', mk),
+    orderBy('ts', 'desc'));
+  const es = await getDocs(eq);
+  monthExpenses = es.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+// ── RENDER ───────────────────────────────────────────────────────
+function getTotals() {
+  return todayMeals.reduce((acc, m) => {
+    acc.cal += m.cal || 0;
+    acc.protein += m.protein || 0;
+    acc.cost += m.cost || 0;
+    return acc;
+  }, { cal: 0, protein: 0, cost: 0 });
+}
+
+function getMonthSpend() {
+  return monthExpenses.reduce((s, e) => s + (e.amount || 0), 0);
+}
+
+function renderDashboard() {
+  const t = getTotals();
+  const ms = getMonthSpend();
+  const calPct = Math.min(100, Math.round(t.cal / 2200 * 100));
+  const protPct = Math.min(100, Math.round(t.protein / 135 * 100));
+  const budPct = Math.min(100, Math.round(ms / 250 * 100));
+
+  document.getElementById('dash-cal').innerHTML = `${Math.round(t.cal)}<span class="stat-unit">kcal</span>`;
+  document.getElementById('dash-prot').innerHTML = `${Math.round(t.protein)}<span class="stat-unit">g</span>`;
+  document.getElementById('cal-bar').style.width = calPct + '%';
+  document.getElementById('cal-bar').style.background = calPct > 100 ? 'var(--danger)' : 'var(--accent)';
+  document.getElementById('prot-bar').style.width = protPct + '%';
+  document.getElementById('dash-spend').innerHTML = `$${t.cost.toFixed(2)}`;
+  document.getElementById('dash-month-spend').textContent = `$${ms.toFixed(2)} this month`;
+
+  // Today schedule
+  const day = new Date().getDay();
+  const sched = SCHEDULE[day];
+  let schedHtml = `<strong style="color:var(--text)">${sched.label}</strong><br>`;
+  schedHtml += `🏋️ ${sched.gym}<br>`;
+  if (sched.run) schedHtml += `🏃 20 min run (morning)<br>`;
+  if (sched.swim) schedHtml += `🏊 Evening swim (optional)<br>`;
+  document.getElementById('today-schedule').innerHTML = schedHtml;
+
+  // Workout summary
+  if (todayWorkouts.length > 0) {
+    document.getElementById('dash-workout').textContent = `${todayWorkouts.length} exercises`;
+    document.getElementById('dash-workout-sub').textContent = todayWorkouts.map(w => w.name).join(', ').substring(0, 30) + '...';
+  }
+
+  // Recent meals preview
+  const preview = todayMeals.slice(-3);
+  if (preview.length === 0) {
+    document.getElementById('dash-meals-preview').innerHTML = '<div class="empty-state">No meals logged yet.</div>';
+  } else {
+    document.getElementById('dash-meals-preview').innerHTML = preview.map(m =>
+      `<div class="meal-entry">
+        <div><div class="meal-name">${m.name}</div><div class="meal-meta">${Math.round(m.cal)} kcal · ${Math.round(m.protein)}g protein</div></div>
+        <div class="meal-meta">${m.mealType}</div>
+      </div>`
+    ).join('');
+  }
+}
+
+function renderMealsList() {
+  const t = getTotals();
+  document.getElementById('total-cal-display').textContent = Math.round(t.cal);
+  document.getElementById('total-prot-display').textContent = Math.round(t.protein) + 'g';
+
+  if (todayMeals.length === 0) {
+    document.getElementById('meals-list').innerHTML = '<div class="empty-state">No meals logged yet.</div>';
+    return;
+  }
+  document.getElementById('meals-list').innerHTML = todayMeals.map(m =>
+    `<div class="meal-entry">
+      <div>
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-meta">${m.mealType} · ${Math.round(m.cal)} kcal · ${Math.round(m.protein)}g protein${m.cost ? ' · $' + m.cost.toFixed(2) : ''}</div>
+      </div>
+      <button class="meal-delete" onclick="deleteMeal('${m.id}')">✕</button>
+    </div>`
+  ).join('');
+}
+
+function renderWorkoutList() {
+  if (todayWorkouts.length === 0) {
+    document.getElementById('workout-list').innerHTML = '<div class="empty-state">No exercises logged yet.</div>';
+    return;
+  }
+  document.getElementById('workout-list').innerHTML = todayWorkouts.map(w =>
+    `<div class="workout-entry">
+      <div class="workout-name">${w.name}</div>
+      <div class="workout-sets">${w.sets.map((s, i) => `Set ${i+1}: ${s.weight}kg × ${s.reps} reps`).join(' · ')}</div>
+    </div>`
+  ).join('');
+}
+
+function renderGymPage() {
+  const day = new Date().getDay();
+  const sched = SCHEDULE[day];
+  document.getElementById('gym-day-label').textContent = sched.label;
+  if (sched.exercises) {
+    document.getElementById('gym-recommended').innerHTML = sched.exercises.map(e => `• ${e}`).join('<br>');
+  } else {
+    document.getElementById('gym-recommended').innerHTML = '<span style="color:var(--muted)">Rest day. Focus on recovery and sleep.</span>';
+  }
+}
+
+function renderBudget() {
+  const ms = getMonthSpend();
+  const left = Math.max(0, 250 - ms);
+  const pct = Math.min(100, Math.round(ms / 250 * 100));
+  document.getElementById('budget-spent').textContent = `$${ms.toFixed(2)} spent`;
+  document.getElementById('budget-left').textContent = `$${left.toFixed(2)} left`;
+  document.getElementById('budget-bar').style.width = pct + '%';
+  document.getElementById('budget-bar').style.background = pct > 90 ? 'var(--danger)' : pct > 70 ? '#ffb84d' : 'var(--accent)';
+
+  if (monthExpenses.length === 0) {
+    document.getElementById('expense-list').innerHTML = '<div class="empty-state">No expenses logged.</div>';
+    return;
+  }
+  document.getElementById('expense-list').innerHTML = monthExpenses.map(e =>
+    `<div class="expense-entry">
+      <div>
+        <div class="expense-name">${e.name}</div>
+        <div class="expense-meta">${new Date(e.ts).toLocaleDateString()}</div>
+      </div>
+      <div class="expense-amount">$${e.amount.toFixed(2)}</div>
+    </div>`
+  ).join('');
+}
+
+// ── FOOD LOGGING ─────────────────────────────────────────────────
+function buildIngredientGrid() {
+  const grid = document.getElementById('ingredient-grid');
+  grid.innerHTML = INGREDIENTS.map(ing =>
+    `<button class="ingredient-btn" onclick="selectIngredient('${ing.id}')">
+      ${ing.name}
+      <div class="ingredient-meta">${ing.unit === 'each' ? `${ing.calPer}kcal · ${ing.proteinPer}g` : `${ing.cal}kcal/100${ing.unit}`}</div>
+    </button>`
+  ).join('');
+}
+
+window.selectIngredient = (id) => {
+  selectedIngredient = INGREDIENTS.find(i => i.id === id);
+  document.querySelectorAll('.ingredient-btn').forEach(b => b.classList.remove('selected'));
+  event.target.closest('.ingredient-btn').classList.add('selected');
+
+  const qs = document.getElementById('quantity-section');
+  qs.style.display = 'block';
+
+  const label = document.getElementById('quantity-label');
+  const input = document.getElementById('quantity-input');
+  if (selectedIngredient.unit === 'each') {
+    label.textContent = `HOW MANY (${selectedIngredient.name}s)`;
+    input.value = 1;
+  } else {
+    label.textContent = `AMOUNT (${selectedIngredient.unit})`;
+    input.value = selectedIngredient.defaultQty;
+  }
+  updateFoodPreview();
+};
+
+window.updateFoodPreview = () => {
+  if (!selectedIngredient) return;
+  const qty = parseFloat(document.getElementById('quantity-input').value) || 0;
+  let cal, protein, cost;
+
+  if (selectedIngredient.unit === 'each') {
+    cal = selectedIngredient.calPer * qty;
+    protein = selectedIngredient.proteinPer * qty;
+    cost = selectedIngredient.costPer * qty;
+  } else {
+    cal = (selectedIngredient.cal / 100) * qty;
+    protein = (selectedIngredient.protein / 100) * qty;
+    cost = (selectedIngredient.cost_per_100 / 100) * qty;
+  }
+
+  document.getElementById('food-preview').textContent =
+    `${Math.round(cal)} kcal · ${Math.round(protein)}g protein · ~$${cost.toFixed(2)}`;
+};
+
+window.logFood = async () => {
+  if (!currentUser) return;
+  const mealType = document.getElementById('meal-type').value;
+
+  // custom food
+  const customName = document.getElementById('custom-name').value;
+  const customCal = parseFloat(document.getElementById('custom-cal').value);
+  const customProt = parseFloat(document.getElementById('custom-prot').value);
+  const customCost = parseFloat(document.getElementById('custom-cost').value) || 0;
+
+  let entry;
+  if (customName && !isNaN(customCal)) {
+    entry = { name: customName, cal: customCal, protein: customProt || 0, cost: customCost, mealType };
+  } else if (selectedIngredient) {
+    const qty = parseFloat(document.getElementById('quantity-input').value) || 0;
+    let cal, protein, cost;
+    if (selectedIngredient.unit === 'each') {
+      cal = selectedIngredient.calPer * qty;
+      protein = selectedIngredient.proteinPer * qty;
+      cost = selectedIngredient.costPer * qty;
+    } else {
+      cal = (selectedIngredient.cal / 100) * qty;
+      protein = (selectedIngredient.protein / 100) * qty;
+      cost = (selectedIngredient.cost_per_100 / 100) * qty;
+    }
+    entry = { name: `${selectedIngredient.name}${qty !== 1 ? ` (${qty}${selectedIngredient.unit})` : ''}`, cal, protein, cost, mealType };
+  } else {
+    return;
+  }
+
+  const docData = {
+    ...entry,
+    uid: currentUser.uid,
+    date: todayKey(),
+    ts: new Date().toISOString()
+  };
+
+  await addDoc(collection(db, 'meals'), docData);
+
+  // also log as expense
+  if (entry.cost > 0) {
+    await addDoc(collection(db, 'expenses'), {
+      name: entry.name,
+      amount: entry.cost,
+      uid: currentUser.uid,
+      month: monthKey(),
+      ts: new Date().toISOString()
+    });
+  }
+
+  closeModal('add-food-modal');
+  await loadTodayData();
+  await loadMonthExpenses();
+  renderDashboard();
+  renderMealsList();
+  renderBudget();
+};
+
+window.deleteMeal = async (id) => {
+  await deleteDoc(doc(db, 'meals', id));
+  await loadTodayData();
+  renderDashboard();
+  renderMealsList();
+};
+
+// ── EXPENSE LOGGING ───────────────────────────────────────────────
+window.logExpense = async () => {
+  const name = document.getElementById('expense-name-input').value;
+  const amount = parseFloat(document.getElementById('expense-amount-input').value);
+  if (!name || isNaN(amount)) return;
+
+  await addDoc(collection(db, 'expenses'), {
+    name, amount,
+    uid: currentUser.uid,
+    month: monthKey(),
+    ts: new Date().toISOString()
+  });
+
+  closeModal('add-expense-modal');
+  await loadMonthExpenses();
+  renderBudget();
+  renderDashboard();
+};
+
+// ── WORKOUT LOGGING ───────────────────────────────────────────────
+window.addSetRow = () => {
+  setCount++;
+  const builder = document.getElementById('sets-builder');
+  const row = document.createElement('div');
+  row.className = 'set-row';
+  row.innerHTML = `
+    <span class="set-label">Set ${setCount}</span>
+    <input type="number" placeholder="kg" min="0" class="set-weight" />
+    <input type="number" placeholder="reps" min="1" class="set-reps" />
+  `;
+  builder.appendChild(row);
+};
+
+window.logWorkout = async () => {
+  const name = document.getElementById('exercise-name').value;
+  if (!name) return;
+
+  const weightInputs = document.querySelectorAll('.set-weight');
+  const repInputs = document.querySelectorAll('.set-reps');
+  const sets = [];
+  weightInputs.forEach((w, i) => {
+    const weight = parseFloat(w.value) || 0;
+    const reps = parseInt(repInputs[i].value) || 0;
+    if (reps > 0) sets.push({ weight, reps });
+  });
+
+  if (sets.length === 0) return;
+
+  await addDoc(collection(db, 'workouts'), {
+    name, sets,
+    uid: currentUser.uid,
+    date: todayKey(),
+    ts: new Date().toISOString()
+  });
+
+  closeModal('add-workout-modal');
+  await loadTodayData();
+  renderWorkoutList();
+  renderDashboard();
+
+  // reset
+  document.getElementById('exercise-name').value = '';
+  document.getElementById('sets-builder').querySelectorAll('.set-row').forEach(r => r.remove());
+  setCount = 0;
+  addSetRow();
+};
+
+// ── AI CHAT ───────────────────────────────────────────────────────
+function buildSystemPrompt() {
+  const t = getTotals();
+  const ms = getMonthSpend();
+  const day = new Date().getDay();
+  const sched = SCHEDULE[day];
+
+  return `You are the built-in AI assistant for Health Savvy, a personal health tracker app for Satvik.
+
+SATVIK'S PROFILE:
+- Age: 18, ECE student at University of Toronto
+- Weight: 76kg, Height: 174cm
+- Goals: Build muscle, lose belly fat, get rid of man boobs (gynecomastia/fat), improve posture
+- Daily targets: 2200 kcal, 135g protein
+- Monthly food budget: $250 CAD
+- Sleep: 12am to 7:30am (consistent)
+- Training background: 7 years taekwondo
+
+TODAY'S DATA:
+- Calories consumed: ${Math.round(t.cal)} / 2200 kcal
+- Protein consumed: ${Math.round(t.protein)} / 135g
+- Today spent: $${t.cost.toFixed(2)}
+- Month spent: $${ms.toFixed(2)} / $250
+- Today's schedule: ${sched.label}
+
+AVAILABLE INGREDIENTS (with nutrition per 100g or per unit):
+- Chicken breast: 165kcal, 31g protein per 100g ($1.36/100g)
+- Eggs: 62kcal, 5.2g protein each ($0.31 each)
+- Oats: 350kcal, 15g protein per 100g
+- Milk 2%: 52kcal, 3.6g protein per 100ml
+- Paneer: 200kcal, 11g protein per 100g
+- Whole wheat bread: 190kcal, 8g protein per slice
+- Roti: 130kcal, 4g protein each
+- Cream cheese: 267kcal, 6.7g protein per 100g
+- Basmati rice: 365kcal, 8g protein per 100g
+- Butter chicken sauce: 96kcal, 1.6g protein per 100ml
+- Apples, cucumber also available
+
+WEEKLY WORKOUT PLAN:
+Mon: Push (Chest/Shoulders/Triceps) 75min
+Tue: Pull (Back/Biceps) 55min + 20min run
+Wed: Legs + Core 75min + evening swim
+Thu: Push varied 55min + 20min run
+Fri: Pull varied 75min + evening swim
+Sat: Full body light 55min + 20min run
+Sun: Rest
+
+You can help Satvik with:
+1. Meal recommendations based on remaining calories/protein
+2. Workout advice and form tips
+3. Budget advice
+4. Updating his goals, budget, ingredients (tell him what to change in settings)
+5. General health and fitness questions
+
+Be direct, honest, and specific. Use numbers. Keep responses concise. Do not use em dashes.`;
+}
+
+window.sendChat = async () => {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  appendChatMsg(msg, 'user');
+  chatHistory.push({ role: 'user', content: msg });
+
+  const loadingEl = appendChatMsg('Thinking...', 'ai loading');
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: buildSystemPrompt(),
+        messages: chatHistory
+      })
+    });
+
+    const data = await response.json();
+    const reply = data.content?.[0]?.text || 'Sorry, something went wrong.';
+    loadingEl.remove();
+    appendChatMsg(reply, 'ai');
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch (e) {
+    loadingEl.remove();
+    appendChatMsg('Connection error. Try again.', 'ai');
+  }
+};
+
+function appendChatMsg(text, cls) {
+  const container = document.getElementById('chat-messages');
+  const el = document.createElement('div');
+  el.className = `chat-msg ${cls}`;
+  el.textContent = text;
+  container.appendChild(el);
+  container.scrollTop = container.scrollHeight;
+  return el;
+}
+
+window.handleChatKey = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChat();
+  }
+};
+
+// ── NAV ───────────────────────────────────────────────────────────
+window.switchPage = (page, btn) => {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+  btn.classList.add('active');
+};
+
+window.switchFoodTab = (tab) => {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'log') || (i === 1 && tab === 'budget'));
+  });
+  document.getElementById('food-log-tab').style.display = tab === 'log' ? 'block' : 'none';
+  document.getElementById('food-budget-tab').style.display = tab === 'budget' ? 'block' : 'none';
+};
+
+// ── MODALS ────────────────────────────────────────────────────────
+window.openAddFood = () => {
+  selectedIngredient = null;
+  document.querySelectorAll('.ingredient-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('quantity-section').style.display = 'none';
+  document.getElementById('custom-name').value = '';
+  document.getElementById('custom-cal').value = '';
+  document.getElementById('custom-prot').value = '';
+  document.getElementById('custom-cost').value = '';
+  document.getElementById('add-food-modal').classList.add('open');
+};
+
+window.openAddExpense = () => {
+  document.getElementById('expense-name-input').value = '';
+  document.getElementById('expense-amount-input').value = '';
+  document.getElementById('add-expense-modal').classList.add('open');
+};
+
+window.openAddWorkout = () => {
+  document.getElementById('add-workout-modal').classList.add('open');
+};
+
+window.closeModal = (id) => {
+  document.getElementById(id).classList.remove('open');
+};
+
+// close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+</script>
+
+<!-- SERVICE WORKER REGISTRATION -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

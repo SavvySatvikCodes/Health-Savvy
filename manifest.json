@@ -1,0 +1,22 @@
+{
+  "name": "Health Savvy",
+  "short_name": "HealthSavvy",
+  "description": "Track calories, protein, workouts and food budget",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/7fff6e/000000?text=HS",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/7fff6e/000000?text=HS",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
