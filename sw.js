@@ -1,34 +1,72 @@
 const CACHE_NAME = 'health-savvy-v1';
+
 const STATIC_ASSETS = [
-  '/Health-Savvy/',
-  '/Health-Savvy/index.html',
-  '/Health-Savvy/manifest.json'
+  'https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap',
 ];
 
-self.addEventListener('install', (event) => {
+const NEVER_CACHE = [
+  'index.html',
+  'manifest.json',
+  'sw.js',
+];
+
+function shouldNeverCache(url) {
+  return NEVER_CACHE.some(function(f) { return url.endsWith(f); });
+}
+
+self.addEventListener('install', function(event) {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll(STATIC_ASSETS);
+    }).then(function() {
+      return self.skipWaiting();
+    })
   );
-  self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', function(event) {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
+    caches.keys().then(function(keys) {
+      return Promise.all(
+        keys.filter(function(key) { return key !== CACHE_NAME; })
+            .map(function(key) { return caches.delete(key); })
+      );
+    }).then(function() {
+      return self.clients.claim();
+    })
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  // Network first for API calls
-  if (event.request.url.includes('firestore') || event.request.url.includes('anthropic')) {
-    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+self.addEventListener('fetch', function(event) {
+  var url = event.request.url;
+
+  if (shouldNeverCache(url)) {
+    event.respondWith(
+      fetch(event.request).then(function(response) {
+        var clone = response.clone();
+        caches.open(CACHE_NAME).then(function(cache) {
+          cache.put(event.request, clone);
+        });
+        return response;
+      }).catch(function() {
+        return caches.match(event.request);
+      })
+    );
     return;
   }
-  // Cache first for static assets
+
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    caches.match(event.request).then(function(cached) {
+      if (cached) return cached;
+      return fetch(event.request).then(function(response) {
+        if (event.request.method === 'GET' && response.status === 200) {
+          var clone = response.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(event.request, clone);
+          });
+        }
+        return response;
+      });
+    })
   );
 });
