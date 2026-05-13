@@ -1,35 +1,22 @@
-const CACHE_NAME = 'health-savvy-v1';
+const CACHE_NAME = 'health-savvy-v2';
 
 const STATIC_ASSETS = [
   'https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap',
 ];
 
-const NEVER_CACHE = [
-  'index.html',
-  'manifest.json',
-  'sw.js',
-];
-
-function shouldNeverCache(url) {
-  return NEVER_CACHE.some(function(f) { return url.endsWith(f); });
-}
-
 self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(STATIC_ASSETS);
-    }).then(function() {
-      return self.skipWaiting();
-    })
-  );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(keys) {
       return Promise.all(
-        keys.filter(function(key) { return key !== CACHE_NAME; })
-            .map(function(key) { return caches.delete(key); })
+        keys.map(function(key) {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
       );
     }).then(function() {
       return self.clients.claim();
@@ -40,26 +27,27 @@ self.addEventListener('activate', function(event) {
 self.addEventListener('fetch', function(event) {
   var url = event.request.url;
 
-  if (shouldNeverCache(url)) {
-    event.respondWith(
-      fetch(event.request).then(function(response) {
-        var clone = response.clone();
-        caches.open(CACHE_NAME).then(function(cache) {
-          cache.put(event.request, clone);
-        });
-        return response;
-      }).catch(function() {
-        return caches.match(event.request);
-      })
-    );
+  // 🚨 THE MAGIC FIX: TELL THE BROWSER TO IGNORE FIREBASE AUTH & DATABASE 🚨
+  if (url.includes('firestore.googleapis.com') || 
+      url.includes('identitytoolkit.googleapis.com') || 
+      url.includes('securetoken.googleapis.com') ||
+      url.includes('google.com/recaptcha') ||
+      url.startsWith('chrome-extension://')) {
+    return; // Let it pass through normally!
+  }
+
+  // Never cache your core files so updates happen instantly
+  if (url.endsWith('index.html') || url.endsWith('sw.js') || url.endsWith('manifest.json')) {
+    event.respondWith(fetch(event.request));
     return;
   }
 
+  // Standard caching for everything else
   event.respondWith(
     caches.match(event.request).then(function(cached) {
       if (cached) return cached;
       return fetch(event.request).then(function(response) {
-        if (event.request.method === 'GET' && response.status === 200) {
+        if (event.request.method === 'GET' && response.status === 200 && event.request.url.startsWith('http')) {
           var clone = response.clone();
           caches.open(CACHE_NAME).then(function(cache) {
             cache.put(event.request, clone);
