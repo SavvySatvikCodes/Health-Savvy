@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Health Savvy</title>
   <meta name="theme-color" content="#0a0a0f" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Health Savvy" />
   <link rel="manifest" href="manifest.json" />
@@ -189,7 +189,9 @@
     <div class="page-title">Gym Log</div>
     <div class="card">
       <div class="card-title">RECOMMENDED TODAY</div>
-      <div id="gym-recommended" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);line-height:2"></div>
+      <div id="gym-recommended" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);line-height:2">
+        You can integrate your daily schedule dynamically here later!
+      </div>
     </div>
   </div>
 
@@ -208,12 +210,9 @@
 
   <div class="page" id="page-settings">
     <div class="page-title">Settings & Ingredients</div>
+    
     <div class="card">
-      <div class="card-title">API CONFIGURATION</div>
-      <div class="input-group">
-        <label>ANTHROPIC API KEY (Required for AI Naming/Chat)</label>
-        <input type="password" id="api-key-input" placeholder="sk-ant-..." onchange="saveApiKey()" />
-      </div>
+      <div class="card-title">ACCOUNT</div>
       <button class="btn-primary" onclick="handleSignout()">Sign Out</button>
     </div>
     
@@ -259,7 +258,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// YOUR FIREBASE CONFIG GOES HERE
+// HARDCODED GEMINI API KEY
+const GEMINI_API_KEY = "AIzaSyC5wMd4K4Tj0Sd7UAQV7LiDZj0zyi7DbJ4";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCMw854CQR6_tafEXNA_Ulj4HgtMGtv7EQ",
   authDomain: "health-savvy-d75d8.firebaseapp.com",
@@ -291,7 +292,6 @@ let userMeals = []; // Stores meals for the current week
 let currentBuildingMeal = [];
 let activeLogDay = null;
 let activeLogMealType = null;
-let apiKey = localStorage.getItem('anthropic_api_key') || '';
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MEALS = ["Breakfast", "Lunch", "Dinner"];
@@ -310,7 +310,6 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     
-    document.getElementById('api-key-input').value = apiKey;
     const now = new Date();
     document.getElementById('topbar-date').textContent = `${DAYS[now.getDay()-1 || 6]}, ${now.getDate()}`;
     
@@ -352,226 +351,3 @@ function getWeekDates() {
 
 async function loadWeeklyMeals() {
   const weekDates = getWeekDates();
-  const q = query(collection(db, 'meals'), 
-    where('uid', '==', currentUser.uid),
-    where('date', '>=', weekDates[0]),
-    where('date', '<=', weekDates[6])
-  );
-  const snap = await getDocs(q);
-  userMeals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  updateDailyTotals();
-}
-
-function renderGrid() {
-  const grid = document.getElementById('meal-grid');
-  let html = `<div class="grid-header"></div>` + DAYS.map(d => `<div class="grid-header">${d}</div>`).join('');
-  
-  const weekDates = getWeekDates();
-
-  MEALS.forEach(meal => {
-    html += `<div class="grid-row-label">${meal.substring(0,3)}</div>`;
-    DAYS.forEach((day, idx) => {
-      const dateStr = weekDates[idx];
-      const logged = userMeals.filter(m => m.date === dateStr && m.mealType === meal);
-      
-      if (logged.length > 0) {
-        let preview = logged.map(m => m.name).join(', ').substring(0,10) + '..';
-        html += `<div class="grid-cell filled" onclick="openModal('${dateStr}', '${meal}')">
-                   <span class="grid-cell-text">${preview}</span>
-                 </div>`;
-      } else {
-        html += `<div class="grid-cell" onclick="openModal('${dateStr}', '${meal}')">
-                   <span class="grid-cell-text">+</span>
-                 </div>`;
-      }
-    });
-  });
-  grid.innerHTML = html;
-}
-
-function updateDailyTotals() {
-  const todayDate = new Date().toISOString().split('T')[0];
-  const todayLog = userMeals.filter(m => m.date === todayDate);
-  let c=0, p=0;
-  todayLog.forEach(m => { c+=m.cal; p+=m.protein; });
-  
-  document.getElementById('dash-cal').innerHTML = `${Math.round(c)} <span style="font-size:0.8rem;color:var(--muted)">/ 2200</span>`;
-  document.getElementById('dash-prot').innerHTML = `${Math.round(p)}g <span style="font-size:0.8rem;color:var(--muted)">/ 135g</span>`;
-}
-
-window.openModal = (dateStr, mealType) => {
-  activeLogDay = dateStr;
-  activeLogMealType = mealType;
-  currentBuildingMeal = [];
-  document.getElementById('modal-meal-title').textContent = `${mealType} Log`;
-  updateMealBuilderUI();
-  document.getElementById('add-meal-modal').classList.add('open');
-};
-
-window.closeModal = (id) => document.getElementById(id).classList.remove('open');
-
-window.addIngredientToMeal = () => {
-  const id = document.getElementById('ingredient-select').value;
-  const qty = parseFloat(document.getElementById('ingredient-qty').value);
-  if(!qty) return;
-  
-  const ing = userIngredients.find(i => i.id === id);
-  const factor = ing.unit === 'each' ? qty : qty/100;
-  
-  currentBuildingMeal.push({
-    name: ing.name,
-    qty: qty,
-    unit: ing.unit,
-    cal: ing.cal * factor,
-    protein: ing.protein * factor,
-    cost: ing.cost * factor
-  });
-  updateMealBuilderUI();
-};
-
-function updateMealBuilderUI() {
-  const list = document.getElementById('current-meal-builder');
-  let tc=0, tp=0;
-  list.innerHTML = currentBuildingMeal.map((item, i) => {
-    tc += item.cal; tp += item.protein;
-    return `<div class="builder-item">
-              <span>${item.qty}${item.unit} ${item.name}</span>
-              <span>${Math.round(item.cal)}kcal | ${Math.round(item.protein)}g</span>
-            </div>`;
-  }).join('');
-  document.getElementById('modal-totals-preview').textContent = `Total: ${Math.round(tc)} kcal | ${Math.round(tp)}g Protein`;
-}
-
-window.saveMeal = async () => {
-  if (currentBuildingMeal.length === 0) return closeModal('add-meal-modal');
-  
-  let tc=0, tp=0, tcost=0;
-  let ingListStr = currentBuildingMeal.map(i => `${i.qty}${i.unit} ${i.name}`).join(', ');
-  currentBuildingMeal.forEach(i => { tc+=i.cal; tp+=i.protein; tcost+=i.cost; });
-  
-  let mealName = "Custom Meal";
-  
-  // AI Naming (If API Key exists)
-  if (apiKey) {
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerously-allow-browser': 'true' },
-        body: JSON.stringify({
-          model: 'claude-3-haiku-20240307', max_tokens: 15,
-          messages: [{ role: 'user', content: `Give a very short, normal food name (max 3 words) for a meal containing: ${ingListStr}. Output ONLY the name.` }]
-        })
-      });
-      const data = await res.json();
-      if(data.content && data.content[0].text) mealName = data.content[0].text.replace(/['"]/g,'').trim();
-    } catch(e) { console.log("AI naming failed, using default."); }
-  } else {
-    mealName = currentBuildingMeal[0].name + " Meal";
-  }
-
-  const docData = {
-    uid: currentUser.uid,
-    date: activeLogDay,
-    mealType: activeLogMealType,
-    name: mealName,
-    ingredients: currentBuildingMeal,
-    cal: tc, protein: tp, cost: tcost,
-    ts: new Date().toISOString()
-  };
-
-  await addDoc(collection(db, 'meals'), docData);
-  closeModal('add-meal-modal');
-  await loadWeeklyMeals();
-  renderGrid();
-};
-
-/* SETTINGS & INGREDIENT EDITING */
-window.saveApiKey = () => {
-  apiKey = document.getElementById('api-key-input').value;
-  localStorage.setItem('anthropic_api_key', apiKey);
-};
-
-function renderSettings() {
-  const cont = document.getElementById('settings-ingredients');
-  cont.innerHTML = userIngredients.map((i, idx) => `
-    <div style="background:var(--surface2); padding:0.75rem; margin-bottom:0.5rem; border-radius:8px;">
-      <div style="font-size:0.8rem; font-weight:700; margin-bottom:0.5rem">${i.name} (${i.unit})</div>
-      <div style="display:flex; gap:0.5rem;">
-        <input type="number" id="ing-cal-${idx}" value="${i.cal}" class="input-group" style="width:30%; padding:0.4rem; font-size:0.75rem;" placeholder="Kcal">
-        <input type="number" id="ing-pro-${idx}" value="${i.protein}" class="input-group" style="width:30%; padding:0.4rem; font-size:0.75rem;" placeholder="Prot(g)">
-        <input type="number" id="ing-cost-${idx}" value="${i.cost}" class="input-group" style="width:30%; padding:0.4rem; font-size:0.75rem;" placeholder="Cost($)">
-      </div>
-    </div>
-  `).join('');
-}
-
-window.saveIngredients = async () => {
-  const updated = userIngredients.map((i, idx) => ({
-    ...i,
-    cal: parseFloat(document.getElementById(`ing-cal-${idx}`).value) || 0,
-    protein: parseFloat(document.getElementById(`ing-pro-${idx}`).value) || 0,
-    cost: parseFloat(document.getElementById(`ing-cost-${idx}`).value) || 0
-  }));
-  
-  await setDoc(doc(db, 'users', currentUser.uid), { ingredients: updated }, { merge: true });
-  userIngredients = updated;
-  alert("Macros updated!");
-};
-
-/* AI CHAT */
-window.sendChat = async () => {
-  const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
-  if(!msg || !apiKey) {
-    if(!apiKey) alert("Please enter Anthropic API Key in Settings first.");
-    return;
-  }
-  input.value = '';
-
-  const chatCont = document.getElementById('chat-messages');
-  chatCont.innerHTML += `<div class="chat-msg user">${msg}</div>`;
-  chatCont.scrollTop = chatCont.scrollHeight;
-  
-  // Calculate remaining macros
-  const todayDate = new Date().toISOString().split('T')[0];
-  const todayLog = userMeals.filter(m => m.date === todayDate);
-  let tc=0, tp=0; todayLog.forEach(m => { tc+=m.cal; tp+=m.protein; });
-  let remCal = 2200 - tc; let remPro = 135 - tp;
-  
-  const ingContext = userIngredients.map(i => `${i.name} (${i.cal}kcal, ${i.protein}g pro per ${i.unit==='each'?'1 unit':'100g'})`).join(', ');
-
-  const systemPrompt = `You are a fitness AI for an 18yo UofT student living at Whitney Hall with a $250/mo budget. 
-  His daily targets: 2200 kcal, 135g protein. 
-  He has currently consumed ${tc} kcal and ${tp}g protein today. 
-  He has remaining: ${remCal} kcal and ${remPro}g protein.
-  His available ingredients are: ${ingContext}.
-  Answer his query directly, concisely, and if asking for a meal, suggest exact quantities from his ingredients to hit his remaining goals.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerously-allow-browser': 'true' },
-      body: JSON.stringify({
-        model: 'claude-3-haiku-20240307', max_tokens: 400,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: msg }]
-      })
-    });
-    const data = await res.json();
-    const reply = data.content[0].text;
-    chatCont.innerHTML += `<div class="chat-msg ai">${reply}</div>`;
-    chatCont.scrollTop = chatCont.scrollHeight;
-  } catch(e) {
-    chatCont.innerHTML += `<div class="chat-msg ai" style="color:var(--danger)">API Error. Check key or CORS.</div>`;
-  }
-};
-
-window.switchPage = (page, btn) => {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`page-${page}`).classList.add('active');
-  btn.classList.add('active');
-};
-</script>
-</body>
-</html>
