@@ -1,176 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Health Savvy</title>
-  <meta name="theme-color" content="#0a0a0f" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Health Savvy" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="icon-192.png" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#1c1c28"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Health Savvy"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" type="image/png" href="icon-192.png"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg:#0a0a0f; --surface:#111118; --surface2:#1a1a24;
-      --border:rgba(255,255,255,0.07); --accent:#5fd94e;
-      --accent2:#38c0e8; --accent3:#e8527a;
-      --text:#f0f0f5; --muted:#8888a0; --danger:#ff4f4f;
+    /* ── THEMES ── */
+    :root,[data-theme="dark"]{
+      --bg:#1c1c28; --surface:#242434; --surface2:#2e2e42;
+      --border:rgba(255,255,255,0.09); --accent:#4f9eff;
+      --accent-hover:#7eb8ff; --text:#eeeef5; --muted:#9090a8;
+      --danger:#ff5555; --success:#4fc97a;
       --font:'Syne',sans-serif; --mono:'DM Mono',monospace;
+      --shadow:0 4px 24px rgba(0,0,0,0.35);
       --radius:14px; --radius-sm:9px;
     }
-    [data-theme="light"] {
-      --bg:#f5f3ee; --surface:#ffffff; --surface2:#ede9e1;
-      --border:rgba(0,0,0,0.09); --accent:#2d8a1f;
-      --accent2:#1a7fa0; --accent3:#c43060;
-      --text:#1a1a1a; --muted:#6b6b6b; --danger:#cc2222;
+    [data-theme="light"]{
+      --bg:#f2efe8; --surface:#ffffff; --surface2:#ebe7de;
+      --border:rgba(0,0,0,0.08); --accent:#1a6dd4;
+      --accent-hover:#1558aa; --text:#1a1a22; --muted:#606078;
+      --danger:#cc2222; --success:#1a8a40;
+      --shadow:0 4px 24px rgba(0,0,0,0.1);
     }
+    /* ── RESET ── */
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-    body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden;transition:background 0.2s,color 0.2s;}
-    *{transition:background-color 0.2s,border-color 0.2s,color 0.2s;}
+    html,body{height:100%;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden;transition:background .2s,color .2s;}
 
-    /* AUTH */
-    #auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:var(--bg);}
+    /* ── LAYOUT ── */
+    .wrap{max-width:640px;margin:0 auto;padding:0 1rem;}
+
+    /* ── AUTH ── */
+    #auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;}
     .auth-logo-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:2rem;}
-    .auth-logo-img{width:64px;height:64px;border-radius:16px;margin-bottom:0.75rem;}
-    .auth-logo{font-size:1.8rem;font-weight:800;}
+    .auth-logo-img{width:64px;height:64px;border-radius:16px;margin-bottom:.75rem;}
+    .auth-logo{font-size:2rem;font-weight:800;}
     .auth-logo span{color:var(--accent);}
-    .auth-tagline{font-family:var(--mono);font-size:1rem;color:var(--muted);letter-spacing:1px;margin-top:0.2rem;}
-    .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;width:100%;max-width:360px;}
-    .auth-tabs{display:flex;gap:0.5rem;margin-bottom:1.5rem;}
-    .auth-tab{flex:1;padding:0.55rem;border:none;border-radius:var(--radius-sm);background:transparent;color:var(--muted);font-family:var(--font);font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
-    .auth-tab.active{background:var(--accent);color:#000;}
-    .input-group{margin-bottom:0.85rem;}
-    .input-group label{display:block;font-size:1rem;color:var(--muted);font-family:var(--mono);margin-bottom:0.35rem;letter-spacing:0.5px;}
-    .input-group input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.7rem 0.9rem;color:var(--text);font-family:var(--mono);font-size:1.05rem;outline:none;transition:border-color 0.2s;}
-    .input-group input:focus{border-color:var(--accent);}
-    .btn-primary{width:100%;padding:0.8rem;background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:1rem;font-weight:700;cursor:pointer;}
-    .btn-google{width:100%;margin-top:0.85rem;padding:0.8rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:1.05rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.65rem;}
-    .auth-divider{display:flex;align-items:center;gap:0.75rem;margin:1rem 0 0;}
+    .auth-tagline{font-family:var(--mono);font-size:.75rem;color:var(--muted);letter-spacing:1px;margin-top:.25rem;}
+    .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;width:100%;max-width:360px;box-shadow:var(--shadow);}
+    .auth-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;}
+    .auth-tab{flex:1;padding:.55rem;border:none;border-radius:var(--radius-sm);background:transparent;color:var(--muted);font-family:var(--font);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;}
+    .auth-tab.active{background:var(--accent);color:#fff;}
+    .igrp{margin-bottom:.85rem;}
+    .igrp label{display:block;font-size:.75rem;color:var(--muted);font-family:var(--mono);margin-bottom:.35rem;letter-spacing:.5px;}
+    .igrp input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem .9rem;color:var(--text);font-family:var(--mono);font-size:.95rem;outline:none;transition:border-color .2s;}
+    .igrp input:focus{border-color:var(--accent);}
+    .btn-primary{width:100%;padding:.8rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s;}
+    .btn-primary:hover{background:var(--accent-hover);}
+    .btn-google{width:100%;margin-top:.85rem;padding:.8rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.65rem;}
+    .auth-divider{display:flex;align-items:center;gap:.75rem;margin:1rem 0 0;}
     .auth-divider div{flex:1;height:1px;background:var(--border);}
-    .auth-divider span{font-family:var(--mono);font-size:1rem;color:var(--muted);}
-    .auth-error{color:var(--danger);font-size:0.75rem;font-family:var(--mono);margin-top:0.75rem;text-align:center;min-height:1rem;}
+    .auth-divider span{font-family:var(--mono);font-size:.72rem;color:var(--muted);}
+    .auth-error{color:var(--danger);font-size:.78rem;font-family:var(--mono);margin-top:.75rem;text-align:center;min-height:1rem;}
 
-    /* APP */
+    /* ── APP SHELL ── */
     #app{display:none;min-height:100vh;padding-bottom:72px;}
-    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(17,17,24,0.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:100;}
-    .nav-btn{flex:1;padding:0.65rem 0.5rem 0.7rem;background:none;border:none;color:var(--muted);font-family:var(--font);font-size:1.05rem;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0.2rem;transition:color 0.2s;}
-    .nav-btn.active{color:var(--accent);}
-    .nav-icon{font-size:1.15rem;}
-    .page{display:none;padding:1rem;}
+    .page{display:none;padding:1rem 0;}
     .page.active{display:block;}
-    .page-title{font-size:1.3rem;font-weight:800;margin-bottom:1rem;}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;margin-bottom:0.85rem;}
-    .card-title{font-size:1.05rem;font-family:var(--mono);color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.65rem;}
 
-    /* TOTALS */
-    .totals-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.65rem;margin-bottom:0.85rem;}
-    .total-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem;}
-    .total-label{font-family:var(--mono);font-size:1.05rem;color:var(--muted);margin-bottom:0.3rem;letter-spacing:0.5px;}
-    .total-value{font-size:1.3rem;font-weight:800;line-height:1;}
-    .total-sub{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin-top:0.2rem;}
-    .progress-bar{height:5px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-top:0.4rem;}
-    .progress-fill{height:100%;border-radius:99px;transition:width 0.4s ease;}
+    /* ── TOPBAR ── */
+    .topbar{display:flex;align-items:center;justify-content:center;padding:1rem 0 .75rem;position:relative;}
+    .topbar-logo{font-size:1.4rem;font-weight:800;text-align:center;}
+    .topbar-logo span{color:var(--accent);}
 
-    /* AI REC */
-    .ai-rec-card{background:linear-gradient(135deg,rgba(127,255,110,0.06),rgba(110,223,255,0.04));border:1px solid rgba(127,255,110,0.15);border-radius:var(--radius);padding:1rem;margin-bottom:0.85rem;}
-    .ai-rec-label{font-family:var(--mono);font-size:1.05rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem;}
-    .ai-rec-text{font-size:1rem;line-height:1.5;color:var(--text);}
-    .ai-rec-text.loading{color:var(--muted);font-family:var(--mono);font-size:0.75rem;}
+    /* ── BOTTOM NAV ── */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;transition:background .2s,border-color .2s;}
+    .nav-btn{flex:1;padding:.65rem .5rem .75rem;background:none;border:none;color:var(--muted);font-family:var(--font);font-size:.65rem;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.2rem;transition:color .2s;}
+    .nav-btn.active{color:var(--accent);}
+    .nav-icon{font-size:1.2rem;}
 
-    /* WEEK GRID */
-    .week-grid-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -1rem;padding:0 1rem 0.5rem;}
-    .week-grid{display:grid;grid-template-columns:44px repeat(7,1fr);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);min-width:420px;}
-    .grid-header{background:var(--surface2);padding:0.45rem 0.2rem;text-align:center;font-family:var(--mono);font-size:0.74rem;color:var(--muted);letter-spacing:0.5px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);}
-    .grid-header:last-child{border-right:none;}
-    .grid-header.today-h{color:var(--accent);}
-    .grid-row-label{background:var(--surface2);padding:0.4rem 0.3rem;font-family:var(--mono);font-size:0.84rem;color:var(--muted);display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);border-bottom:1px solid var(--border);text-align:center;line-height:1.3;}
-    .meal-cell{background:var(--surface);border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.3rem 0.2rem;min-height:58px;cursor:pointer;transition:background 0.15s;display:flex;flex-direction:column;justify-content:center;align-items:center;}
-    .meal-cell:last-child{border-right:none;}
-    .meal-cell.today-col{background:rgba(127,255,110,0.04);}
-    .meal-cell.today-col:hover{background:rgba(127,255,110,0.1);}
-    .meal-cell:not(.today-col):hover{background:var(--surface2);}
-    .cell-name{font-size:0.76rem;font-weight:700;color:var(--text);text-align:center;line-height:1.25;word-break:break-word;}
-    .cell-cal{font-size:1rem;font-family:var(--mono);color:var(--muted);margin-top:0.12rem;}
-    .cell-plus{font-size:1rem;color:rgba(255,255,255,0.12);}
-    .meal-cell.today-col .cell-plus{color:rgba(127,255,110,0.25);}
-    .no-border-bottom{border-bottom:none!important;}
-
-    /* MODAL */
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:flex-end;backdrop-filter:blur(4px);}
-    .modal-overlay.open{display:flex;}
-    .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;padding:1.4rem;width:100%;max-height:88vh;overflow-y:auto;}
-    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
-    .modal-title{font-size:1rem;font-weight:700;}
-    .btn-close{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);width:28px;height:28px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .ingredient-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-bottom:0.75rem;}
-    .ing-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.5rem 0.6rem;color:var(--text);font-family:var(--font);font-size:1.05rem;font-weight:600;cursor:pointer;text-align:left;transition:border-color 0.15s;}
-    .ing-btn.selected{border-color:var(--accent);background:rgba(127,255,110,0.08);}
-    .ing-meta{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin-top:0.1rem;}
-    .added-item{display:flex;align-items:center;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid var(--border);}
-    .added-item:last-child{border-bottom:none;}
-    .added-item-name{font-size:1rem;font-weight:600;}
-    .added-item-meta{font-family:var(--mono);font-size:1.05rem;color:var(--muted);}
-    .btn-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0.2rem;}
-    .btn-remove:hover{color:var(--danger);}
-    .qty-row{display:flex;gap:0.5rem;align-items:center;margin-bottom:0.65rem;}
-    .qty-row label{font-family:var(--mono);font-size:1rem;color:var(--muted);white-space:nowrap;min-width:90px;}
-    .qty-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.5rem 0.65rem;color:var(--text);font-family:var(--mono);font-size:1.05rem;outline:none;}
-    .qty-row input:focus{border-color:var(--accent);}
-    .food-preview{font-family:var(--mono);font-size:1rem;color:var(--accent);margin-bottom:0.65rem;min-height:1rem;}
-    .custom-section{border-top:1px solid var(--border);padding-top:0.75rem;margin-top:0.5rem;}
-    .custom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem;}
-    .modal-actions{display:flex;gap:0.6rem;margin-top:0.85rem;}
-    .btn-secondary{flex:1;padding:0.65rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-weight:600;cursor:pointer;font-size:1rem;}
-    .btn-add-primary{flex:2;padding:0.65rem;background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:1.05rem;font-weight:700;cursor:pointer;}
-
-    /* GYM */
-    .workout-day-label{font-family:var(--mono);font-size:1.05rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem;}
-    .exercise-list{font-family:var(--mono);font-size:1.05rem;color:var(--muted);line-height:2;}
-    .workout-entry{padding:0.6rem 0;border-bottom:1px solid var(--border);}
-    .workout-entry:last-child{border-bottom:none;}
-    .workout-name{font-size:1.05rem;font-weight:600;}
-    .workout-sets{font-family:var(--mono);font-size:1.05rem;color:var(--muted);margin-top:0.12rem;}
-    .btn-icon{background:var(--accent);color:#000;border:none;border-radius:8px;width:30px;height:30px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;}
-    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;}
+    /* ── CARDS ── */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;margin-bottom:.85rem;transition:background .2s,border-color .2s;}
+    .card-title{font-size:.72rem;font-family:var(--mono);color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:.65rem;}
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;}
     .section-title{font-size:1rem;font-weight:700;}
-    .empty-state{text-align:center;padding:1.5rem 1rem;color:var(--muted);font-family:var(--mono);font-size:0.84rem;}
-    .set-row{display:grid;grid-template-columns:34px 1fr 1fr;gap:0.4rem;align-items:center;margin-bottom:0.4rem;}
-    .set-label{font-family:var(--mono);font-size:0.77rem;color:var(--muted);}
-    .set-row input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.42rem 0.5rem;color:var(--text);font-family:var(--mono);font-size:1.05rem;outline:none;width:100%;}
-    .btn-add-set{background:none;border:1px dashed var(--border);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:1rem;padding:0.35rem;cursor:pointer;width:100%;margin-bottom:0.7rem;}
+    .btn-icon{background:var(--accent);color:#fff;border:none;border-radius:8px;width:30px;height:30px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;}
+    .empty-state{text-align:center;padding:1.5rem 1rem;color:var(--muted);font-family:var(--mono);font-size:.82rem;}
+
+    /* ── PROGRESS ── */
+    .progress-bar{height:5px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-top:.4rem;}
+    .progress-fill{height:100%;border-radius:99px;transition:width .4s ease;}
+
+    /* ── DAILY TOTALS ── */
+    .totals-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem;margin-bottom:.85rem;}
+    .total-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem;transition:background .2s,border-color .2s;}
+    .total-label{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:.3rem;letter-spacing:.5px;}
+    .total-value{font-size:1.3rem;font-weight:800;line-height:1;}
+    .total-sub{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.25rem;}
+
+    /* ── AI REC ── */
+    .ai-rec-card{background:var(--surface);border:1px solid var(--accent);border-left:3px solid var(--accent);border-radius:var(--radius);padding:1rem;margin-bottom:.85rem;}
+    .ai-rec-label{font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:.4rem;}
+    .ai-rec-text{font-size:.9rem;line-height:1.6;color:var(--text);}
+    .ai-rec-text.loading{color:var(--muted);font-family:var(--mono);font-size:.82rem;}
+
+    /* ── WEEK GRID ── */
+    .week-grid-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -.5rem;padding:0 .5rem .5rem;}
+    .week-grid{display:grid;grid-template-columns:40px repeat(7,1fr);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);min-width:400px;}
+    .gh{background:var(--surface2);padding:.5rem .2rem;text-align:center;font-family:var(--mono);font-size:.75rem;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);border-right:1px solid var(--border);}
+    .gh:last-child{border-right:none;}
+    .gh.today-h{color:var(--accent);}
+    .grl{background:var(--surface2);padding:.4rem .25rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);border-bottom:1px solid var(--border);text-align:center;line-height:1.3;}
+    .mc{background:var(--surface);border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:.3rem .2rem;min-height:54px;cursor:pointer;transition:background .15s;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.1rem;position:relative;}
+    .mc:last-child{border-right:none;}
+    .mc.tc{background:rgba(79,158,255,0.06);}
+    .mc:hover{background:var(--surface2);}
+    .mc.tc:hover{background:rgba(79,158,255,0.12);}
+    .cn{font-size:.68rem;font-weight:700;color:var(--text);text-align:center;line-height:1.2;word-break:break-word;}
+    .cc{font-size:.64rem;font-family:var(--mono);color:var(--muted);}
+    .cp{font-size:1rem;color:var(--border);}
+    .mc.tc .cp{color:rgba(79,158,255,.3);}
+    .nb{border-right:none!important;}
+    .nlb{border-bottom:none!important;}
+
+    /* ── MODAL ── */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(6px);}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow);}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
+    .modal-title{font-size:1.05rem;font-weight:700;}
+    .btn-close{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);width:28px;height:28px;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .ing-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.75rem;}
+    .ing-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .6rem;color:var(--text);font-family:var(--font);font-size:.85rem;font-weight:600;cursor:pointer;text-align:left;transition:border-color .15s;}
+    .ing-btn.sel{border-color:var(--accent);background:rgba(79,158,255,.08);}
+    .ing-meta{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.1rem;}
+    .added-item{display:flex;align-items:center;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--border);}
+    .added-item:last-child{border-bottom:none;}
+    .ai-name{font-size:.88rem;font-weight:600;}
+    .ai-meta{font-family:var(--mono);font-size:.72rem;color:var(--muted);}
+    .btn-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.88rem;padding:.2rem;}
+    .btn-rm:hover{color:var(--danger);}
+    .qty-row{display:flex;gap:.5rem;align-items:center;margin-bottom:.65rem;}
+    .qty-row label{font-family:var(--mono);font-size:.78rem;color:var(--muted);white-space:nowrap;min-width:100px;}
+    .qty-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .65rem;color:var(--text);font-family:var(--mono);font-size:.95rem;outline:none;}
+    .qty-row input:focus{border-color:var(--accent);}
+    .food-preview{font-family:var(--mono);font-size:.78rem;color:var(--accent);margin-bottom:.65rem;min-height:1rem;}
+    .custom-section{border-top:1px solid var(--border);padding-top:.85rem;margin-top:.5rem;}
+    .custom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;}
+    .modal-actions{display:flex;gap:.6rem;margin-top:.85rem;}
+    .btn-sec{flex:1;padding:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-weight:600;cursor:pointer;font-size:.9rem;}
+    .btn-acc{flex:2;padding:.7rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:.9rem;font-weight:700;cursor:pointer;}
+    .btn-danger-sm{padding:.4rem .85rem;background:transparent;border:1px solid var(--danger);border-radius:var(--radius-sm);color:var(--danger);font-family:var(--mono);font-size:.78rem;cursor:pointer;}
+    .running-total{font-family:var(--mono);font-size:.8rem;color:var(--accent);margin-top:.4rem;}
+
+    /* ── GYM ── */
+    .day-card{margin-bottom:.75rem;}
+    .day-header{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+    .day-header:hover{background:var(--surface2);}
+    .day-header.active-day{border-color:var(--accent);}
+    .day-num{font-family:var(--mono);font-size:.72rem;color:var(--muted);width:28px;flex-shrink:0;}
+    .day-name{font-size:.95rem;font-weight:700;flex:1;}
+    .day-type{font-family:var(--mono);font-size:.72rem;color:var(--accent);}
+    .day-chevron{color:var(--muted);font-size:.85rem;transition:transform .2s;}
+    .day-body{display:none;padding:.75rem 1.1rem 1rem;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);margin-top:-var(--radius);}
+    .day-body.open{display:block;}
+    .exercise-row{display:flex;align-items:center;gap:.65rem;padding:.5rem 0;border-bottom:1px solid var(--border);cursor:pointer;}
+    .exercise-row:last-child{border-bottom:none;}
+    .exercise-row:hover .ex-name{color:var(--accent);}
+    .ex-bullet{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+    .ex-name{font-size:.9rem;font-weight:600;flex:1;transition:color .2s;}
+    .ex-sets{font-family:var(--mono);font-size:.72rem;color:var(--muted);}
+    .ex-link{font-size:.82rem;color:var(--muted);}
+    .day-note{font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-top:.65rem;padding-top:.65rem;border-top:1px solid var(--border);}
+
+    /* LOG WORKOUT */
+    .workout-entry{padding:.6rem 0;border-bottom:1px solid var(--border);}
+    .workout-entry:last-child{border-bottom:none;}
+    .workout-name{font-size:.9rem;font-weight:600;}
+    .workout-sets{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.12rem;}
+    .set-row{display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;align-items:center;margin-bottom:.4rem;}
+    .set-label{font-family:var(--mono);font-size:.7rem;color:var(--muted);}
+    .set-row input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.42rem .5rem;color:var(--text);font-family:var(--mono);font-size:.85rem;outline:none;width:100%;}
+    .btn-add-set{background:none;border:1px dashed var(--border);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:.78rem;padding:.38rem;cursor:pointer;width:100%;margin-bottom:.7rem;}
     .btn-add-set:hover{border-color:var(--accent);color:var(--accent);}
 
-    /* CHAT */
-    .chat-messages{min-height:250px;max-height:46vh;overflow-y:auto;margin-bottom:0.75rem;display:flex;flex-direction:column;gap:0.6rem;}
-    .chat-msg{max-width:88%;padding:0.6rem 0.85rem;border-radius:12px;font-size:1rem;line-height:1.5;}
-    .chat-msg.user{background:var(--accent);color:#000;align-self:flex-end;font-weight:600;}
-    .chat-msg.ai{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;font-family:var(--mono);font-size:0.84rem;}
-    .chat-input-row{display:flex;gap:0.4rem;}
-    .chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.65rem 0.85rem;color:var(--text);font-family:var(--mono);font-size:1rem;outline:none;resize:none;}
+    /* ── AI CHAT ── */
+    .chat-messages{min-height:220px;max-height:44vh;overflow-y:auto;margin-bottom:.75rem;display:flex;flex-direction:column;gap:.6rem;}
+    .chat-msg{max-width:88%;padding:.6rem .85rem;border-radius:12px;font-size:.88rem;line-height:1.55;}
+    .chat-msg.user{background:var(--accent);color:#fff;align-self:flex-end;font-weight:600;}
+    .chat-msg.ai{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;font-family:var(--mono);font-size:.8rem;}
+    .chat-input-row{display:flex;gap:.4rem;}
+    .chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem .9rem;color:var(--text);font-family:var(--mono);font-size:.88rem;outline:none;resize:none;}
     .chat-input:focus{border-color:var(--accent);}
-    .btn-send{background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);padding:0.65rem 0.9rem;font-size:1rem;cursor:pointer;font-weight:700;}
+    .btn-send{background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:.7rem 1rem;font-size:1.1rem;cursor:pointer;font-weight:700;}
+    .api-notice{font-family:var(--mono);font-size:.75rem;color:var(--muted);text-align:center;padding:.5rem;margin-bottom:.75rem;}
 
-    /* SETTINGS */
-    .settings-section-title{font-family:var(--mono);font-size:0.77rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.6rem;}
-    .setting-row{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border);}
+    /* ── SETTINGS ── */
+    .settings-section-title{font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:.65rem;}
+    .setting-row{display:flex;align-items:center;justify-content:space-between;padding:.65rem 0;border-bottom:1px solid var(--border);}
     .setting-row:last-child{border-bottom:none;}
-    .setting-label{font-size:1rem;font-weight:600;}
-    .setting-sub{font-family:var(--mono);font-size:0.77rem;color:var(--muted);margin-top:0.1rem;}
-    .setting-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.38rem 0.55rem;color:var(--text);font-family:var(--mono);font-size:1rem;outline:none;width:85px;text-align:right;}
+    .setting-label{font-size:.9rem;font-weight:600;}
+    .setting-sub{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.1rem;}
+    .setting-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.4rem .6rem;color:var(--text);font-family:var(--mono);font-size:.9rem;outline:none;width:90px;text-align:right;}
     .setting-input:focus{border-color:var(--accent);}
-    .btn-save-settings{width:100%;padding:0.78rem;background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:1rem;font-weight:700;cursor:pointer;margin-top:1rem;}
-    .budget-numbers{display:flex;justify-content:space-between;font-family:var(--mono);font-size:1rem;color:var(--muted);margin-bottom:0.3rem;}
-    .expense-entry{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);}
+    .btn-save{width:100%;padding:.82rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:.95rem;font-weight:700;cursor:pointer;margin-top:1rem;}
+    .budget-numbers{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-bottom:.3rem;}
+    .expense-entry{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);}
     .expense-entry:last-child{border-bottom:none;}
-    .expense-name{font-size:1rem;font-weight:600;}
-    .expense-meta{font-family:var(--mono);font-size:1.05rem;color:var(--muted);}
-    .expense-amount{font-family:var(--mono);font-size:1rem;color:var(--accent);}
+    .exp-name{font-size:.88rem;font-weight:600;}
+    .exp-meta{font-family:var(--mono);font-size:.68rem;color:var(--muted);}
+    .exp-amount{font-family:var(--mono);font-size:.88rem;color:var(--accent);}
+    .theme-btns{display:flex;gap:.5rem;}
+    .theme-btn{padding:.38rem .85rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;}
+    .theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+    .ing-setting-row{display:flex;align-items:center;gap:.5rem;padding:.5rem 0;border-bottom:1px solid var(--border);}
+    .ing-setting-row:last-child{border-bottom:none;}
+    .ing-setting-name{font-size:.88rem;font-weight:600;flex:1;}
+    .ing-setting-sub{font-family:var(--mono);font-size:.68rem;color:var(--muted);}
+    .small-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.35rem .5rem;color:var(--text);font-family:var(--mono);font-size:.85rem;outline:none;width:60px;text-align:center;}
+    .small-input:focus{border-color:var(--accent);}
+    .ing-input-grp{display:flex;flex-direction:column;align-items:center;gap:.1rem;}
+    .ing-input-label{font-family:var(--mono);font-size:.6rem;color:var(--muted);}
+    .btn-signout{width:100%;padding:.75rem;background:transparent;border:1px solid var(--danger);border-radius:var(--radius-sm);color:var(--danger);font-family:var(--font);font-size:.9rem;font-weight:600;cursor:pointer;margin-top:.5rem;}
+    .danger-zone{margin-top:1rem;}
+    .danger-zone-title{font-family:var(--mono);font-size:.7rem;color:var(--danger);letter-spacing:1px;text-transform:uppercase;margin-bottom:.65rem;}
+    .btn-danger{width:100%;padding:.72rem;background:transparent;border:1px solid var(--danger);border-radius:var(--radius-sm);color:var(--danger);font-family:var(--font);font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:.5rem;}
 
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
     .loading{animation:pulse 1.2s infinite;}
   </style>
 </head>
@@ -179,7 +234,7 @@
 <!-- AUTH -->
 <div id="auth-screen">
   <div class="auth-logo-wrap">
-    <img src="icon-192.png" class="auth-logo-img" alt="Health Savvy" />
+    <img src="icon-192.png" class="auth-logo-img" alt="Health Savvy"/>
     <div class="auth-logo">Health<span>Savvy</span></div>
     <div class="auth-tagline">// track. train. thrive.</div>
   </div>
@@ -189,14 +244,14 @@
       <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
     </div>
     <div id="login-form">
-      <div class="input-group"><label>EMAIL</label><input type="email" id="login-email" placeholder="you@email.com" /></div>
-      <div class="input-group"><label>PASSWORD</label><input type="password" id="login-password" placeholder="••••••••" /></div>
+      <div class="igrp"><label>EMAIL</label><input type="email" id="login-email" placeholder="you@email.com"/></div>
+      <div class="igrp"><label>PASSWORD</label><input type="password" id="login-password" placeholder="••••••••"/></div>
       <button class="btn-primary" onclick="handleLogin()">Sign In</button>
     </div>
     <div id="signup-form" style="display:none">
-      <div class="input-group"><label>NAME</label><input type="text" id="signup-name" placeholder="Satvik" /></div>
-      <div class="input-group"><label>EMAIL</label><input type="email" id="signup-email" placeholder="you@email.com" /></div>
-      <div class="input-group"><label>PASSWORD</label><input type="password" id="signup-password" placeholder="min 6 characters" /></div>
+      <div class="igrp"><label>NAME</label><input type="text" id="signup-name" placeholder="Satvik"/></div>
+      <div class="igrp"><label>EMAIL</label><input type="email" id="signup-email" placeholder="you@email.com"/></div>
+      <div class="igrp"><label>PASSWORD</label><input type="password" id="signup-password" placeholder="min 6 characters"/></div>
       <button class="btn-primary" onclick="handleSignup()">Create Account</button>
     </div>
     <div class="auth-divider"><div></div><span>or</span><div></div></div>
@@ -211,128 +266,153 @@
 <!-- APP -->
 <div id="app">
 
-  <!-- DASHBOARD -->
-  <div class="page active" id="page-dashboard">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-top:0.5rem">
-      <div style="font-size:1.3rem;font-weight:800">Health<span style="color:var(--accent)">Savvy</span></div>
-      <button onclick="handleSignout()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:0.77rem;padding:0.32rem 0.6rem;cursor:pointer">sign out</button>
-    </div>
-
-    <div class="totals-row">
-      <div class="total-card">
-        <div class="total-label">CALORIES</div>
-        <div class="total-value" id="tot-cal">0</div>
-        <div class="total-sub" id="tot-cal-left">— left</div>
-        <div class="progress-bar"><div class="progress-fill" id="cal-bar" style="background:var(--accent);width:0%"></div></div>
+  <!-- TODAY PAGE -->
+  <div class="page active" id="page-today">
+    <div class="wrap">
+      <div class="topbar"><div class="topbar-logo">Health<span>Savvy</span></div></div>
+      <div class="totals-grid">
+        <div class="total-card">
+          <div class="total-label">CALORIES</div>
+          <div class="total-value" id="tot-cal">0</div>
+          <div class="total-sub" id="tot-cal-left">— left</div>
+          <div class="progress-bar"><div class="progress-fill" id="cal-bar" style="background:var(--accent);width:0%"></div></div>
+        </div>
+        <div class="total-card">
+          <div class="total-label">PROTEIN</div>
+          <div class="total-value" id="tot-prot">0g</div>
+          <div class="total-sub" id="tot-prot-left">— left</div>
+          <div class="progress-bar"><div class="progress-fill" id="prot-bar" style="background:var(--accent);width:0%"></div></div>
+        </div>
+        <div class="total-card">
+          <div class="total-label">BUDGET</div>
+          <div class="total-value" id="tot-spend" style="font-size:1.1rem">$0</div>
+          <div class="total-sub" id="tot-spend-left">— left</div>
+          <div class="progress-bar"><div class="progress-fill" id="spend-bar" style="background:var(--accent);width:0%"></div></div>
+        </div>
       </div>
-      <div class="total-card">
-        <div class="total-label">PROTEIN</div>
-        <div class="total-value" id="tot-prot" style="color:var(--accent2)">0g</div>
-        <div class="total-sub" id="tot-prot-left">— left</div>
-        <div class="progress-bar"><div class="progress-fill" id="prot-bar" style="background:var(--accent2);width:0%"></div></div>
+      <div class="ai-rec-card">
+        <div class="ai-rec-label">✦ Next Meal Suggestion</div>
+        <div class="ai-rec-text loading" id="ai-rec-text">Loading...</div>
       </div>
-      <div class="total-card">
-        <div class="total-label">BUDGET</div>
-        <div class="total-value" id="tot-spend" style="font-size:1rem">$0</div>
-        <div class="total-sub" id="tot-spend-left">— left</div>
-        <div class="progress-bar"><div class="progress-fill" id="spend-bar" style="background:var(--accent3);width:0%"></div></div>
+      <div class="card-title" style="margin-bottom:.5rem">THIS WEEK — tap a cell to log</div>
+      <div class="week-grid-wrap">
+        <div class="week-grid" id="week-grid"></div>
       </div>
-    </div>
-
-    <div class="ai-rec-card">
-      <div class="ai-rec-label">✦ Next Meal Suggestion</div>
-      <div class="ai-rec-text loading" id="ai-rec-text">Loading...</div>
-    </div>
-
-    <div class="card-title" style="margin-bottom:0.5rem">THIS WEEK — tap any cell to log</div>
-    <div class="week-grid-wrap">
-      <div class="week-grid" id="week-grid"></div>
     </div>
   </div>
 
-  <!-- GYM -->
+  <!-- GYM PAGE -->
   <div class="page" id="page-gym">
-    <div class="page-title">Gym Log</div>
-    <div class="card">
-      <div class="workout-day-label" id="gym-day-label"></div>
-      <div class="card-title">RECOMMENDED TODAY</div>
-      <div class="exercise-list" id="gym-recommended"></div>
-    </div>
-    <div class="card">
-      <div class="section-header">
-        <div class="section-title">Today's Log</div>
-        <button class="btn-icon" onclick="openAddWorkout()">+</button>
-      </div>
-      <div id="workout-list"><div class="empty-state">No exercises logged yet.</div></div>
-    </div>
-  </div>
-
-  <!-- AI -->
-  <div class="page" id="page-ai">
-    <div class="page-title">AI Assistant</div>
-    <div class="card" style="padding:0;overflow:hidden">
-      <div style="padding:0.8rem 1rem;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:0.77rem;color:var(--muted)">Knows your goals, ingredients, budget, and today's data.</div>
-      <div style="padding:1rem">
-        <div class="chat-messages" id="chat-messages">
-          <div class="chat-msg ai">Hey! I know your full profile. Ask me for meal recommendations, workout advice, or tell me about any changes to your plan.</div>
-        </div>
-        <div class="chat-input-row">
-          <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ask me anything..." onkeydown="handleChatKey(event)"></textarea>
-          <button class="btn-send" onclick="sendChat()">↑</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SETTINGS -->
-  <div class="page" id="page-settings">
-    <div class="page-title">Settings</div>
-    <div class="card">
-      <div class="settings-section-title">Appearance</div>
-      <div class="setting-row">
-        <div><div class="setting-label">Theme</div><div class="setting-sub">switch between dark and light</div></div>
-        <div style="display:flex;gap:0.5rem">
-          <button id="theme-dark-btn" onclick="setTheme('dark')" style="padding:0.35rem 0.75rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:0.85rem;font-weight:600;cursor:pointer">Dark</button>
-          <button id="theme-light-btn" onclick="setTheme('light')" style="padding:0.35rem 0.75rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:0.85rem;font-weight:600;cursor:pointer">Light</button>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="settings-section-title">Daily Goals</div>
-      <div class="setting-row">
-        <div><div class="setting-label">Calorie Goal</div><div class="setting-sub">kcal per day</div></div>
-        <input class="setting-input" type="number" id="set-cal" value="2200" />
-      </div>
-      <div class="setting-row">
-        <div><div class="setting-label">Protein Goal</div><div class="setting-sub">grams per day</div></div>
-        <input class="setting-input" type="number" id="set-prot" value="135" />
-      </div>
-      <div class="setting-row">
-        <div><div class="setting-label">Monthly Budget</div><div class="setting-sub">CAD per month</div></div>
-        <input class="setting-input" type="number" id="set-budget" value="250" />
-      </div>
-    </div>
-    <div class="card">
-      <div class="settings-section-title">Ingredient Nutrition</div>
-      <div id="ingredient-settings-list"></div>
-    </div>
-    <button class="btn-save-settings" onclick="saveSettings()">Save Settings</button>
-    <div class="card" style="margin-top:0.85rem">
-      <div class="settings-section-title">Budget This Month</div>
-      <div class="budget-numbers"><span id="set-budget-spent">$0 spent</span><span id="set-budget-left">$250 left</span></div>
-      <div class="progress-bar" style="height:8px"><div class="progress-fill" id="set-budget-bar" style="background:var(--accent);width:0%"></div></div>
-      <div style="margin-top:0.85rem">
+    <div class="wrap">
+      <div class="topbar"><div class="topbar-logo">Gym <span>Schedule</span></div></div>
+      <div id="gym-days-list"></div>
+      <div class="card" style="margin-top:.5rem">
         <div class="section-header">
-          <div class="section-title" style="font-size:0.85rem">Expenses</div>
-          <button class="btn-icon" onclick="openAddExpense()">+</button>
+          <div class="section-title">Today's Log</div>
+          <button class="btn-icon" onclick="openWorkoutModal()">+</button>
         </div>
-        <div id="expense-list"><div class="empty-state">No expenses logged.</div></div>
+        <div id="workout-list"><div class="empty-state">No exercises logged today.</div></div>
       </div>
+    </div>
+  </div>
+
+  <!-- AI PAGE -->
+  <div class="page" id="page-ai">
+    <div class="wrap">
+      <div class="topbar"><div class="topbar-logo">AI <span>Assistant</span></div></div>
+      <div id="api-key-notice" class="card" style="display:none">
+        <div class="card-title">ANTHROPIC API KEY REQUIRED</div>
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem;line-height:1.5">The AI features need an Anthropic API key to work on GitHub Pages. Add your key in Settings.</p>
+        <button class="btn-acc" onclick="switchPage('settings',document.querySelector('.nav-btn:last-child'))">Go to Settings</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:.85rem 1rem;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:.72rem;color:var(--muted)">Knows your goals, ingredients, budget, and today's data.</div>
+        <div style="padding:1rem">
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-msg ai">Hey! I know your full profile. Ask me for meal recommendations, workout advice, or updates to your plan.</div>
+          </div>
+          <div class="chat-input-row">
+            <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ask me anything..." onkeydown="handleChatKey(event)"></textarea>
+            <button class="btn-send" onclick="sendChat()">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PAGE -->
+  <div class="page" id="page-settings">
+    <div class="wrap">
+      <div class="topbar"><div class="topbar-logo">Settings</div></div>
+
+      <div class="card">
+        <div class="settings-section-title">Appearance</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Theme</div><div class="setting-sub">dark or light mode</div></div>
+          <div class="theme-btns">
+            <button class="theme-btn active" id="btn-dark" onclick="setTheme('dark')">Dark</button>
+            <button class="theme-btn" id="btn-light" onclick="setTheme('light')">Light</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="settings-section-title">API Key</div>
+        <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:.5rem">
+          <div><div class="setting-label">Anthropic API Key</div><div class="setting-sub">required for AI features on GitHub Pages</div></div>
+          <input type="password" id="api-key-input" class="setting-input" style="width:100%;text-align:left" placeholder="sk-ant-..." />
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="settings-section-title">Daily Goals</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Calorie Goal</div><div class="setting-sub">kcal per day</div></div>
+          <input class="setting-input" type="number" id="set-cal" value="2200"/>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Protein Goal</div><div class="setting-sub">grams per day</div></div>
+          <input class="setting-input" type="number" id="set-prot" value="135"/>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Monthly Budget</div><div class="setting-sub">CAD per month</div></div>
+          <input class="setting-input" type="number" id="set-budget" value="250"/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="settings-section-title">Ingredient Nutrition</div>
+        <div id="ing-settings-list"></div>
+      </div>
+
+      <button class="btn-save" onclick="saveSettings()">Save Settings</button>
+
+      <div class="card" style="margin-top:.85rem">
+        <div class="settings-section-title">Budget This Month</div>
+        <div class="budget-numbers"><span id="s-budget-spent">$0 spent</span><span id="s-budget-left">$250 left</span></div>
+        <div class="progress-bar" style="height:8px"><div class="progress-fill" id="s-budget-bar" style="background:var(--accent);width:0%"></div></div>
+        <div style="margin-top:.85rem">
+          <div class="section-header">
+            <div class="section-title" style="font-size:.9rem">Expenses</div>
+            <button class="btn-icon" onclick="openExpenseModal()">+</button>
+          </div>
+          <div id="expense-list"><div class="empty-state">No expenses logged.</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="danger-zone-title">Danger Zone</div>
+        <button class="btn-danger" onclick="deleteThisWeek()">Delete This Week's Meals</button>
+        <button class="btn-danger" onclick="deleteAllMeals()">Delete All Meal Data</button>
+        <button class="btn-danger" onclick="deleteAllExpenses()">Delete All Expenses</button>
+      </div>
+
+      <button class="btn-signout" onclick="handleSignout()">Sign Out</button>
     </div>
   </div>
 
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchPage('dashboard',this)"><span class="nav-icon">⚡</span>Today</button>
+    <button class="nav-btn active" onclick="switchPage('today',this)"><span class="nav-icon">⚡</span>Today</button>
     <button class="nav-btn" onclick="switchPage('gym',this)"><span class="nav-icon">💪</span>Gym</button>
     <button class="nav-btn" onclick="switchPage('ai',this)"><span class="nav-icon">✦</span>AI</button>
     <button class="nav-btn" onclick="switchPage('settings',this)"><span class="nav-icon">⚙</span>Settings</button>
@@ -344,36 +424,36 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="meal-modal-title">Log Meal</div>
-      <button class="btn-close" onclick="closeModal('meal-modal')">✕</button>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button class="btn-danger-sm" id="meal-delete-btn" onclick="deleteMeal()" style="display:none">Delete</button>
+        <button class="btn-close" onclick="closeModal('meal-modal')">✕</button>
+      </div>
     </div>
-    <div id="added-items-section" style="display:none;margin-bottom:0.85rem">
+    <div id="added-section" style="display:none;margin-bottom:.85rem">
       <div class="card-title">ADDED SO FAR</div>
-      <div id="added-items-list"></div>
-      <div class="food-preview" id="meal-running-total" style="margin-top:0.4rem"></div>
+      <div id="added-list"></div>
+      <div class="running-total" id="running-total"></div>
     </div>
     <div class="card-title">ADD INGREDIENT</div>
-    <div class="ingredient-grid" id="ing-grid"></div>
+    <div class="ing-grid" id="ing-grid"></div>
     <div id="qty-section" style="display:none">
-      <div class="qty-row">
-        <label id="qty-label">Amount (g)</label>
-        <input type="number" id="qty-input" value="100" min="1" oninput="updatePreview()" />
-      </div>
-      <div class="food-preview" id="food-preview-text"></div>
-      <button class="btn-add-primary" style="width:100%;margin-bottom:0.85rem" onclick="addItemToMeal()">Add This Item</button>
+      <div class="qty-row"><label id="qty-label">Amount (g)</label><input type="number" id="qty-input" value="100" min="1" oninput="updatePreview()"/></div>
+      <div class="food-preview" id="food-preview"></div>
+      <button class="btn-acc" style="width:100%;margin-bottom:.85rem" onclick="addItem()">Add This Item</button>
     </div>
     <div class="custom-section">
-      <div class="card-title">OR ADD CUSTOM ITEM</div>
-      <div class="input-group"><label>NAME</label><input type="text" id="custom-name" placeholder="e.g. Pizza slice" /></div>
+      <div class="card-title">OR CUSTOM ITEM</div>
+      <div class="igrp"><label>NAME</label><input type="text" id="c-name" placeholder="e.g. Pizza slice"/></div>
       <div class="custom-grid">
-        <div class="input-group" style="margin:0"><label>KCAL</label><input type="number" id="custom-cal" placeholder="300" /></div>
-        <div class="input-group" style="margin:0"><label>PROTEIN (g)</label><input type="number" id="custom-prot" placeholder="15" /></div>
-        <div class="input-group" style="margin:0"><label>COST ($)</label><input type="number" id="custom-cost" placeholder="0" step="0.01" /></div>
+        <div class="igrp" style="margin:0"><label>KCAL</label><input type="number" id="c-cal" placeholder="300"/></div>
+        <div class="igrp" style="margin:0"><label>PROTEIN (g)</label><input type="number" id="c-prot" placeholder="15"/></div>
+        <div class="igrp" style="margin:0"><label>COST ($)</label><input type="number" id="c-cost" placeholder="0" step="0.01"/></div>
       </div>
-      <button class="btn-add-primary" style="width:100%;margin-top:0.6rem" onclick="addCustomItem()">Add Custom Item</button>
+      <button class="btn-acc" style="width:100%;margin-top:.6rem" onclick="addCustom()">Add Custom</button>
     </div>
     <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeModal('meal-modal')">Cancel</button>
-      <button class="btn-add-primary" onclick="saveMeal()">Save Meal</button>
+      <button class="btn-sec" onclick="closeModal('meal-modal')">Cancel</button>
+      <button class="btn-acc" onclick="saveMeal()">Save Meal</button>
     </div>
   </div>
 </div>
@@ -381,17 +461,14 @@
 <!-- WORKOUT MODAL -->
 <div class="modal-overlay" id="workout-modal">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Log Exercise</div>
-      <button class="btn-close" onclick="closeModal('workout-modal')">✕</button>
-    </div>
-    <div class="input-group"><label>EXERCISE NAME</label><input type="text" id="exercise-name" placeholder="e.g. Bench Press" /></div>
-    <div class="card-title" style="margin-top:0.5rem">SETS</div>
+    <div class="modal-header"><div class="modal-title">Log Exercise</div><button class="btn-close" onclick="closeModal('workout-modal')">✕</button></div>
+    <div class="igrp"><label>EXERCISE NAME</label><input type="text" id="ex-name" placeholder="e.g. Bench Press"/></div>
+    <div class="card-title" style="margin-top:.5rem">SETS</div>
     <div id="sets-builder"></div>
     <button class="btn-add-set" onclick="addSetRow()">+ Add Set</button>
     <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeModal('workout-modal')">Cancel</button>
-      <button class="btn-add-primary" onclick="logWorkout()">Log Exercise</button>
+      <button class="btn-sec" onclick="closeModal('workout-modal')">Cancel</button>
+      <button class="btn-acc" onclick="logWorkout()">Log Exercise</button>
     </div>
   </div>
 </div>
@@ -399,15 +476,12 @@
 <!-- EXPENSE MODAL -->
 <div class="modal-overlay" id="expense-modal">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Log Expense</div>
-      <button class="btn-close" onclick="closeModal('expense-modal')">✕</button>
-    </div>
-    <div class="input-group"><label>DESCRIPTION</label><input type="text" id="exp-name" placeholder="e.g. Pizza with friends" /></div>
-    <div class="input-group"><label>AMOUNT ($)</label><input type="number" id="exp-amount" placeholder="12.50" step="0.01" /></div>
+    <div class="modal-header"><div class="modal-title">Log Expense</div><button class="btn-close" onclick="closeModal('expense-modal')">✕</button></div>
+    <div class="igrp"><label>DESCRIPTION</label><input type="text" id="exp-name" placeholder="e.g. Pizza with friends"/></div>
+    <div class="igrp"><label>AMOUNT ($)</label><input type="number" id="exp-amount" placeholder="12.50" step="0.01"/></div>
     <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeModal('expense-modal')">Cancel</button>
-      <button class="btn-add-primary" onclick="logExpense()">Add Expense</button>
+      <button class="btn-sec" onclick="closeModal('expense-modal')">Cancel</button>
+      <button class="btn-acc" onclick="logExpense()">Add Expense</button>
     </div>
   </div>
 </div>
@@ -415,96 +489,149 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, deleteDoc, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, deleteDoc, orderBy, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCMw854CQR6_tafEXNA_Ulj4HgtMGtv7EQ",
-  authDomain: "health-savvy-d75d8.firebaseapp.com",
-  projectId: "health-savvy-d75d8",
-  storageBucket: "health-savvy-d75d8.firebasestorage.app",
-  messagingSenderId: "862134254339",
-  appId: "1:862134254339:web:9a81b49caf84d17d460736"
+  apiKey:"AIzaSyCMw854CQR6_tafEXNA_Ulj4HgtMGtv7EQ",
+  authDomain:"health-savvy-d75d8.firebaseapp.com",
+  projectId:"health-savvy-d75d8",
+  storageBucket:"health-savvy-d75d8.firebasestorage.app",
+  messagingSenderId:"862134254339",
+  appId:"1:862134254339:web:9a81b49caf84d17d460736"
 };
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const DEFAULT_INGREDIENTS = [
-  { id:"chicken",      name:"Chicken Breast",       cal:165,  protein:31,  unit:"g",    defaultQty:233, cost100:1.36 },
-  { id:"eggs",         name:"Egg",                  cal:62,   protein:5.2, unit:"each", defaultQty:1,   cost100:0.31 },
-  { id:"oats",         name:"Oats",                 cal:350,  protein:15,  unit:"g",    defaultQty:80,  cost100:0.28 },
-  { id:"milk",         name:"Milk (2%)",             cal:52,   protein:3.6, unit:"ml",   defaultQty:250, cost100:0.16 },
-  { id:"paneer",       name:"Paneer",               cal:200,  protein:11,  unit:"g",    defaultQty:100, cost100:1.59 },
-  { id:"bread",        name:"Bread (slice)",        cal:190,  protein:8,   unit:"each", defaultQty:1,   cost100:0.25 },
-  { id:"roti",         name:"Roti",                 cal:130,  protein:4,   unit:"each", defaultQty:1,   cost100:0.26 },
-  { id:"cream_cheese", name:"Cream Cheese",         cal:267,  protein:6.7, unit:"g",    defaultQty:30,  cost100:1.17 },
-  { id:"rice",         name:"Basmati Rice",         cal:365,  protein:8,   unit:"g",    defaultQty:100, cost100:0.44 },
-  { id:"gravy",        name:"Butter Chicken Sauce", cal:96,   protein:1.6, unit:"ml",   defaultQty:125, cost100:0.87 },
-  { id:"apple",        name:"Apple",                cal:80,   protein:0.5, unit:"each", defaultQty:1,   cost100:0.40 },
-  { id:"cucumber",     name:"Cucumber",             cal:15,   protein:0.6, unit:"g",    defaultQty:100, cost100:0.094 },
+// ── SCHEDULE ──────────────────────────────────────────────────────
+const SCHEDULE = [
+  { day:"Monday", type:"Push — Upper Chest", note:"75 min | Goal: Build the upper chest plate and widen the shoulders.",
+    exercises:[
+      {name:"Incline Dumbbell Bench Press",sets:"4 × 8-10",note:"Set bench to 30°. Focus on the stretch."},
+      {name:"Flat Machine Chest Press",sets:"3 × 8-10",note:"Keeps it safe and controlled while pushing heavy."},
+      {name:"Seated Dumbbell Shoulder Press",sets:"3 × 8-10",note:"Keep your back flat against the pad."},
+      {name:"Cable / Dumbbell Lateral Raises",sets:"4 × 12-15",note:"Light weight, strictly use the side of the shoulder."},
+      {name:"Pec Deck Machine (Chest Flyes)",sets:"3 × 12-15",note:"Squeeze your chest hard in the middle."},
+      {name:"Tricep Rope Pushdowns",sets:"3 × 10-12",note:""},
+      {name:"Overhead Tricep Extension (Dumbbell)",sets:"3 × 10-12",note:""},
+    ], evening:"45-minute Swim" },
+  { day:"Tuesday", type:"Pull — Back Width & Posture + Run", note:"55 min lifting + 20 min run | Goal: Build the lats and pull your posture upright.",
+    exercises:[
+      {name:"Lat Pulldown Machine (Wide Grip)",sets:"4 × 8-10",note:"Pull to upper chest, not behind your neck."},
+      {name:"Seated Cable Row",sets:"3 × 10-12",note:"Keep chest up; squeeze shoulder blades together."},
+      {name:"Face Pulls (Cable Machine)",sets:"3 × 12-15",note:"Set cable high, pull rope towards your face. Magic for posture."},
+      {name:"Dumbbell Hammer Curls",sets:"3 × 10-12",note:"Builds the thick part of the bicep."},
+    ], evening:"20-minute Run after lifting" },
+  { day:"Wednesday", type:"Arms — Biceps & Triceps + Run", note:"55 min lifting + 20 min run | Goal: Dedicated pump to fill out your sleeves.",
+    exercises:[
+      {name:"Cable Bicep Curls (Straight Bar)",sets:"4 × 10-12",note:""},
+      {name:"Tricep V-Bar Pushdowns",sets:"4 × 10-12",note:""},
+      {name:"Incline Dumbbell Curls",sets:"3 × 10-12",note:"Sit on incline bench to fully stretch the bicep at the bottom."},
+      {name:"Skullcrushers (Lying Tricep Extension)",sets:"3 × 10-12",note:"Use light dumbbells, lie flat, bend only at the elbows."},
+      {name:"Cable Lateral Raises",sets:"3 × 15",note:"A little extra shoulder width work never hurts."},
+    ], evening:"20-minute Run + 45-minute Swim" },
+  { day:"Thursday", type:"Legs & Core", note:"75 min | Goal: Maintenance legs, heavy core to tighten the midsection.",
+    exercises:[
+      {name:"Leg Press Machine",sets:"4 × 10-12",note:"Easier on the spine than heavy barbell squats for a beginner."},
+      {name:"Seated Leg Curl Machine",sets:"3 × 10-12",note:"Targets the hamstrings."},
+      {name:"Leg Extension Machine",sets:"3 × 12-15",note:"Targets the quads."},
+      {name:"Calf Raises (on Leg Press)",sets:"3 × 15",note:""},
+      {name:"Forearm Plank",sets:"3 × max hold",note:"Keep your back flat."},
+      {name:"Machine / Cable Crunches",sets:"3 × 12-15",note:"Adds resistance to abs so they show at higher body fat."},
+    ], evening:"" },
+  { day:"Friday", type:"Push — Shoulders & Chest", note:"75 min | Goal: Hit push muscles from new angles, prioritising shoulder width.",
+    exercises:[
+      {name:"Seated Dumbbell Shoulder Press",sets:"4 × 8-10",note:"Doing this first when freshest means heavier weight."},
+      {name:"Incline Machine Chest Press",sets:"3 × 8-10",note:"Upper chest, using machine for stability."},
+      {name:"Flat Dumbbell Bench Press",sets:"3 × 8-10",note:""},
+      {name:"Dumbbell Lateral Raises",sets:"4 × 12-15",note:""},
+      {name:"Assisted Tricep Dips Machine",sets:"3 × 10-12",note:"Use the machine with the knee pad to assist your weight."},
+      {name:"Cable Crossovers",sets:"3 × 12-15",note:"Targets the lower/inner chest to round it out."},
+    ], evening:"" },
+  { day:"Saturday", type:"Pull & Arms — The Finisher + Run", note:"55 min lifting + 20 min run | Goal: Empty the tank for the week.",
+    exercises:[
+      {name:"Lat Pulldown (Close/Neutral Grip)",sets:"3 × 10-12",note:"Palms facing each other."},
+      {name:"Single-Arm Dumbbell Row",sets:"3 × 10-12 per arm",note:"Support yourself on a bench."},
+      {name:"Preacher Curl Machine",sets:"3 × 10-12",note:"Locks elbows in place so you can't cheat."},
+      {name:"Rope Tricep Pushdowns",sets:"3 × 10-12",note:""},
+      {name:"Face Pulls",sets:"3 × 15",note:"Hitting posture one last time before the weekend."},
+    ], evening:"20-minute Run after lifting" },
+  { day:"Sunday", type:"Complete Rest", note:"Do absolutely nothing physical. Eat your 2200 calories, hit your 135g protein, and recover.",
+    exercises:[], evening:"" },
 ];
 
-const SCHEDULE = {
-  0:{label:"SUNDAY — REST DAY",exercises:[]},
-  1:{label:"MONDAY — PUSH DAY",exercises:["Bench Press 4x8","Overhead Press 3x10","Incline DB Press 3x10","Lateral Raises 3x15","Tricep Pushdown 3x12"]},
-  2:{label:"TUESDAY — PULL + RUN",exercises:["Pull-ups / Lat Pulldown 4x8","Seated Cable Row 3x10","Face Pulls 3x15","Hammer Curls 3x12","Barbell Curl 3x10"]},
-  3:{label:"WEDNESDAY — LEGS",exercises:["Squat 4x8","Romanian Deadlift 3x10","Leg Press 3x12","Calf Raises 4x15","Plank 3x45sec","Hanging Knee Raises 3x15"]},
-  4:{label:"THURSDAY — PUSH + RUN",exercises:["DB Press 4x10","Arnold Press 3x10","Cable Flyes 3x12","Tricep Dips 3x12","Front Raises 3x12"]},
-  5:{label:"FRIDAY — PULL",exercises:["Deadlift 3x5","Single-arm Row 3x10","Lat Pulldown 3x12","Preacher Curl 3x10","Reverse Curl 3x12"]},
-  6:{label:"SATURDAY — FULL BODY + RUN",exercises:["Goblet Squat 3x12","Push-ups 3x15","Bent-over Row 3x12","DB Curl 3x12","Core circuit 3 rounds"]},
-};
+// ── INGREDIENTS ───────────────────────────────────────────────────
+const DEFAULT_INGREDIENTS = [
+  {id:"chicken",name:"Chicken Breast",cal:165,protein:31,unit:"g",defaultQty:233,cost100:1.36},
+  {id:"eggs",name:"Egg",cal:62,protein:5.2,unit:"each",defaultQty:1,cost100:0.31},
+  {id:"oats",name:"Oats",cal:350,protein:15,unit:"g",defaultQty:80,cost100:0.28},
+  {id:"milk",name:"Milk (2%)",cal:52,protein:3.6,unit:"ml",defaultQty:250,cost100:0.16},
+  {id:"paneer",name:"Paneer",cal:200,protein:11,unit:"g",defaultQty:100,cost100:1.59},
+  {id:"bread",name:"Bread (slice)",cal:190,protein:8,unit:"each",defaultQty:1,cost100:0.25},
+  {id:"roti",name:"Roti",cal:130,protein:4,unit:"each",defaultQty:1,cost100:0.26},
+  {id:"cream_cheese",name:"Cream Cheese",cal:267,protein:6.7,unit:"g",defaultQty:30,cost100:1.17},
+  {id:"rice",name:"Basmati Rice",cal:365,protein:8,unit:"g",defaultQty:100,cost100:0.44},
+  {id:"gravy",name:"Butter Chicken Sauce",cal:96,protein:1.6,unit:"ml",defaultQty:125,cost100:0.87},
+  {id:"apple",name:"Apple",cal:80,protein:0.5,unit:"each",defaultQty:1,cost100:0.40},
+  {id:"cucumber",name:"Cucumber",cal:15,protein:0.6,unit:"g",defaultQty:100,cost100:0.094},
+];
 
-const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const MEALS=["Breakfast","Lunch","Dinner"];
+const DAYS_SHORT = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const MEALS = ["Breakfast","Lunch","Dinner"];
 
-let currentUser=null;
-let userSettings={calorieGoal:2200,proteinGoal:135,budgetMonthly:250};
-let ingredients=[...DEFAULT_INGREDIENTS];
-let weekMeals={};
-let todayWorkouts=[];
-let monthExpenses=[];
-let chatHistory=[];
-let currentMealKey=null;
-let pendingItems=[];
-let selectedIng=null;
-let setCount=0;
+// ── STATE ─────────────────────────────────────────────────────────
+let currentUser = null;
+let userSettings = {calorieGoal:2200,proteinGoal:135,budgetMonthly:250};
+let ingredients = [...DEFAULT_INGREDIENTS];
+let weekMeals = {};
+let todayWorkouts = [];
+let monthExpenses = [];
+let chatHistory = [];
+let currentMealKey = null;
+let pendingItems = [];
+let selectedIng = null;
+let setCount = 0;
+let apiKey = '';
 
+// ── UTILS ─────────────────────────────────────────────────────────
 function dateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function todayKey(){return dateKey(new Date());}
 function monthKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
 
+// Week starts Monday
 function getWeekDates(){
   const today=new Date();
-  // Week starts Monday: getDay() 0=Sun,1=Mon...6=Sat
-  // offset so Monday=0
-  const dow=today.getDay();
-  const mondayOffset=dow===0?-6:1-dow;
+  const dow=today.getDay(); // 0=Sun
+  const mondayOffset = dow===0 ? -6 : 1-dow;
   return Array.from({length:7},(_,i)=>{const d=new Date(today);d.setDate(today.getDate()+mondayOffset+i);return d;});
 }
 
 function calcItem(ing,qty){
-  if(ing.unit==='each') return {cal:ing.cal*qty,protein:ing.protein*qty,cost:ing.cost100*qty};
-  return {cal:(ing.cal/100)*qty,protein:(ing.protein/100)*qty,cost:(ing.cost100/100)*qty};
+  if(ing.unit==='each') return {cal:ing.cal*qty, protein:ing.protein*qty, cost:ing.cost100*qty};
+  return {cal:(ing.cal/100)*qty, protein:(ing.protein/100)*qty, cost:(ing.cost100/100)*qty};
 }
 
 function getTodayTotals(){
   const tk=todayKey();
-  return Object.entries(weekMeals).filter(([k])=>k.startsWith(tk)).reduce((a,[,m])=>({cal:a.cal+(m.cal||0),protein:a.protein+(m.protein||0),cost:a.cost+(m.cost||0)}),{cal:0,protein:0,cost:0});
+  return Object.entries(weekMeals)
+    .filter(([k])=>k.startsWith(tk))
+    .reduce((a,[,m])=>({cal:a.cal+(m.cal||0),protein:a.protein+(m.protein||0),cost:a.cost+(m.cost||0)}),{cal:0,protein:0,cost:0});
 }
 
 function getMonthSpend(){
-  // Primary: sum from expenses collection
-  const fromExpenses = monthExpenses.reduce((s,e)=>s+(e.amount||0),0);
-  return fromExpenses;
-}
-function getMealCostThisMonth(){
-  // Fallback: sum meal costs directly from loaded weekMeals for this month
-  const mk=monthKey();
-  return Object.entries(weekMeals).filter(([k])=>k.startsWith(mk.replace('-',''))||k.substring(0,7)===mk).reduce((s,[,m])=>s+(m.cost||0),0);
+  return monthExpenses.reduce((s,e)=>s+(e.amount||0),0);
 }
 
-// AUTH
+// ── THEME ─────────────────────────────────────────────────────────
+window.setTheme=(theme)=>{
+  document.documentElement.setAttribute('data-theme',theme);
+  localStorage.setItem('hs-theme',theme);
+  document.getElementById('btn-dark').classList.toggle('active',theme==='dark');
+  document.getElementById('btn-light').classList.toggle('active',theme==='light');
+};
+(()=>{const t=localStorage.getItem('hs-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+
+// ── AUTH ──────────────────────────────────────────────────────────
 window.switchAuthTab=(tab)=>{
   document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
   document.getElementById('login-form').style.display=tab==='login'?'block':'none';
@@ -535,6 +662,10 @@ onAuthStateChanged(auth,async(user)=>{
     currentUser=user;
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app').style.display='block';
+    apiKey=localStorage.getItem('hs-apikey')||'';
+    document.getElementById('api-key-input').value=apiKey;
+    const savedTheme=localStorage.getItem('hs-theme')||'dark';
+    setTheme(savedTheme);
     await initApp();
   }else{
     currentUser=null;
@@ -543,6 +674,7 @@ onAuthStateChanged(auth,async(user)=>{
   }
 });
 
+// ── INIT ──────────────────────────────────────────────────────────
 async function initApp(){
   await loadUserSettings();
   await loadWeekMeals();
@@ -550,12 +682,14 @@ async function initApp(){
   await loadMonthExpenses();
   buildGrid();
   renderTotals();
-  renderGymPage();
-  renderSettingsIngredients();
+  buildGymSchedule();
+  renderWorkoutList();
+  renderIngSettings();
   renderBudget();
   fetchAiRec();
 }
 
+// ── LOAD DATA ─────────────────────────────────────────────────────
 async function loadUserSettings(){
   try{
     const snap=await getDoc(doc(db,'users',currentUser.uid));
@@ -569,87 +703,73 @@ async function loadUserSettings(){
       document.getElementById('set-prot').value=userSettings.proteinGoal;
       document.getElementById('set-budget').value=userSettings.budgetMonthly;
     }
-  }catch(e){console.log('settings error',e);}
+  }catch(e){console.log('settings err',e);}
 }
 
 async function loadWeekMeals(){
   weekMeals={};
   const dates=getWeekDates();
-  const startKey=dateKey(dates[0]), endKey=dateKey(dates[6]);
+  const startKey=dateKey(dates[0]),endKey=dateKey(dates[6]);
   try{
     const q=query(collection(db,'meals2'),where('uid','==',currentUser.uid),where('date','>=',startKey),where('date','<=',endKey));
-    const snap=await getDocs(q);
-    snap.forEach(d=>{const data=d.data();weekMeals[`${data.date}_${data.mealType}`]={...data,docId:d.id};});
-  }catch(e){console.log('meals error',e);}
+    (await getDocs(q)).forEach(d=>{const data=d.data();weekMeals[`${data.date}_${data.mealType}`]={...data,docId:d.id};});
+  }catch(e){console.log('meals err',e);}
 }
 
 async function loadTodayWorkouts(){
   try{
     const q=query(collection(db,'workouts'),where('uid','==',currentUser.uid),where('date','==',todayKey()));
-    const snap=await getDocs(q);
-    todayWorkouts=snap.docs.map(d=>({id:d.id,...d.data()}));
+    todayWorkouts=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}));
     renderWorkoutList();
-  }catch(e){console.log('workouts error',e);}
+  }catch(e){console.log('workouts err',e);}
 }
 
 async function loadMonthExpenses(){
   try{
-    const q=query(collection(db,'expenses'),where('uid','==',currentUser.uid),where('month','==',monthKey()),orderBy('ts','desc'));
-    const snap=await getDocs(q);
-    monthExpenses=snap.docs.map(d=>({id:d.id,...d.data()}));
-  }catch(e){
-    // fallback without orderBy if index missing
-    try{
-      const q2=query(collection(db,'expenses'),where('uid','==',currentUser.uid),where('month','==',monthKey()));
-      const snap2=await getDocs(q2);
-      monthExpenses=snap2.docs.map(d=>({id:d.id,...d.data()}));
-    }catch(e2){console.log('expenses error',e2);}
-  }
+    const q=query(collection(db,'expenses'),where('uid','==',currentUser.uid),where('month','==',monthKey()));
+    monthExpenses=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.ts.localeCompare(a.ts));
+  }catch(e){console.log('expenses err',e);}
 }
 
+// ── GRID ──────────────────────────────────────────────────────────
 function buildGrid(){
   const dates=getWeekDates();
   const todayStr=todayKey();
   let html='';
-
-  // Header
-  html+='<div class="grid-header" style="border-right:1px solid var(--border)"></div>';
+  // Header row (empty corner + 7 day headers)
+  html+='<div class="gh" style="border-right:1px solid var(--border)"></div>';
   dates.forEach((d,i)=>{
-    const isToday=dateKey(d)===todayStr;
-    html+=`<div class="grid-header${isToday?' today-h':''}" style="${i<6?'border-right:1px solid var(--border)':''}">${DAYS[d.getDay()]}<br><span style="font-size:1.05rem">${d.getDate()}</span></div>`;
+    const isT=dateKey(d)===todayStr;
+    html+=`<div class="gh${isT?' today-h':''}${i===6?' nb':''}">${DAYS_SHORT[i]}<br><span style="font-weight:400;font-size:.7rem;opacity:.7">${d.getDate()}</span></div>`;
   });
-
-  // Rows
   MEALS.forEach((meal,mi)=>{
     const isLastRow=mi===2;
-    html+=`<div class="grid-row-label" style="${isLastRow?'border-bottom:none':''}">${meal.substring(0,3)}</div>`;
+    html+=`<div class="grl${isLastRow?' nlb':''}">${meal.substring(0,3)}</div>`;
     dates.forEach((d,di)=>{
       const dk=dateKey(d);
       const key=`${dk}_${meal}`;
-      const isToday=dk===todayStr;
+      const isT=dk===todayStr;
       const isLast=di===6;
       const data=weekMeals[key];
-      const borderStyle=`${isLast?'border-right:none':''}${isLastRow?';border-bottom:none':''}`;
+      const bStyle=`${isLast?'border-right:none':''}${isLastRow?';border-bottom:none':''}`;
       if(data){
-        html+=`<div class="meal-cell has-data${isToday?' today-col':''}" onclick="openMealModal('${dk}','${meal}')" style="${borderStyle}">
-          <div class="cell-name">${data.aiName||meal}</div>
-          <div class="cell-cal">${Math.round(data.cal)}kcal</div>
+        html+=`<div class="mc${isT?' tc':''}" onclick="openMealModal('${dk}','${meal}')" style="${bStyle}">
+          <div class="cn">${data.aiName||meal}</div>
+          <div class="cc">${Math.round(data.cal)}kcal</div>
         </div>`;
       }else{
-        html+=`<div class="meal-cell${isToday?' today-col':''}" onclick="openMealModal('${dk}','${meal}')" style="${borderStyle}">
-          <span class="cell-plus">+</span>
-        </div>`;
+        html+=`<div class="mc${isT?' tc':''}" onclick="openMealModal('${dk}','${meal}')" style="${bStyle}"><span class="cp">+</span></div>`;
       }
     });
   });
-
   document.getElementById('week-grid').innerHTML=html;
 }
 
+// ── TOTALS ────────────────────────────────────────────────────────
 function renderTotals(){
   const t=getTodayTotals();
   const ms=getMonthSpend();
-  const cg=userSettings.calorieGoal, pg=userSettings.proteinGoal, bg=userSettings.budgetMonthly;
+  const cg=userSettings.calorieGoal,pg=userSettings.proteinGoal,bg=userSettings.budgetMonthly;
 
   document.getElementById('tot-cal').textContent=Math.round(t.cal);
   document.getElementById('tot-cal-left').textContent=`${Math.max(0,Math.round(cg-t.cal))} left`;
@@ -662,28 +782,83 @@ function renderTotals(){
 
   document.getElementById('tot-spend').textContent='$'+ms.toFixed(2);
   document.getElementById('tot-spend-left').textContent=`$${Math.max(0,bg-ms).toFixed(0)} left`;
-  document.getElementById('spend-bar').style.width=Math.min(100,ms/bg*100)+'%';
-  document.getElementById('spend-bar').style.background=ms/bg>0.9?'var(--danger)':ms/bg>0.7?'#ffb84d':'var(--accent3)';
+  const spPct=Math.min(100,ms/bg*100);
+  document.getElementById('spend-bar').style.width=spPct+'%';
+  document.getElementById('spend-bar').style.background=spPct>90?'var(--danger)':spPct>70?'#f0a444':'var(--accent)';
 }
 
+// ── AI REC ────────────────────────────────────────────────────────
 async function fetchAiRec(){
-  const t=getTodayTotals();
-  const calLeft=Math.max(0,userSettings.calorieGoal-t.cal);
-  const protLeft=Math.max(0,userSettings.proteinGoal-t.protein);
   const el=document.getElementById('ai-rec-text');
   el.className='ai-rec-text loading';
   el.textContent='Loading...';
+  if(!apiKey){el.className='ai-rec-text';el.textContent='Add your Anthropic API key in Settings to get AI recommendations.';return;}
+  const t=getTodayTotals();
+  const calLeft=Math.max(0,userSettings.calorieGoal-t.cal);
+  const protLeft=Math.max(0,userSettings.proteinGoal-t.protein);
   const hour=new Date().getHours();
   const nextMeal=hour<11?'breakfast':hour<15?'lunch':'dinner';
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:120,messages:[{role:'user',content:`Satvik has ${Math.round(calLeft)} kcal and ${Math.round(protLeft)}g protein left today. Available: ${ingredients.map(i=>i.name).join(', ')}. Next meal: ${nextMeal}. Suggest a specific meal with amounts. Max 2 sentences. No em dashes.`}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:120,messages:[{role:'user',content:`Satvik has ${Math.round(calLeft)} kcal and ${Math.round(protLeft)}g protein left today. Available: ${ingredients.map(i=>i.name).join(', ')}. Next meal: ${nextMeal}. Suggest a specific meal with amounts. Max 2 sentences. No em dashes.`}]})
+    });
     const data=await res.json();
     el.className='ai-rec-text';
     el.textContent=data.content?.[0]?.text||'Could not load.';
-  }catch(e){el.className='ai-rec-text';el.textContent='Could not load recommendation.';}
+  }catch(e){el.className='ai-rec-text';el.textContent='Could not connect. Check your API key in Settings.';}
 }
 
-// MEAL MODAL
+// ── GYM SCHEDULE ─────────────────────────────────────────────────
+function buildGymSchedule(){
+  const todayDow=new Date().getDay(); // 0=Sun
+  // Convert to Mon=0 index
+  const todayIdx=todayDow===0?6:todayDow-1;
+  let html='';
+  SCHEDULE.forEach((s,i)=>{
+    const isToday=i===todayIdx;
+    html+=`<div class="day-card">
+      <div class="day-header${isToday?' active-day':''}" onclick="toggleDay(${i})">
+        <div class="day-num">${i===6?'REST':`Day ${i+1}`}</div>
+        <div>
+          <div class="day-name">${s.day}</div>
+          <div class="day-type">${s.type}</div>
+        </div>
+        <div class="day-chevron" id="chev-${i}">${isToday?'▾':'▸'}</div>
+      </div>
+      <div class="day-body${isToday?' open':''}" id="body-${i}">
+        ${s.exercises.map(ex=>`
+          <div class="exercise-row" onclick="searchExercise('${ex.name.replace(/'/g,"\\'")}')">
+            <div class="ex-bullet"></div>
+            <div>
+              <div class="ex-name">${ex.name}</div>
+              ${ex.note?`<div style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.08rem">${ex.note}</div>`:''}
+            </div>
+            <div class="ex-sets">${ex.sets}</div>
+            <div class="ex-link">🔍</div>
+          </div>`).join('')}
+        ${s.exercises.length===0?'<div class="empty-state">Rest day. Recover and sleep.</div>':''}
+        <div class="day-note">${s.note}${s.evening?`<br><strong style="color:var(--accent)">Evening:</strong> ${s.evening}`:''}</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('gym-days-list').innerHTML=html;
+}
+
+window.toggleDay=(i)=>{
+  const body=document.getElementById(`body-${i}`);
+  const chev=document.getElementById(`chev-${i}`);
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  chev.textContent=isOpen?'▸':'▾';
+};
+
+window.searchExercise=(name)=>{
+  window.open(`https://www.google.com/search?q=${encodeURIComponent(name+' exercise how to')}','_blank'`);
+};
+
+// ── MEAL MODAL ────────────────────────────────────────────────────
 window.openMealModal=(dateStr,mealType)=>{
   currentMealKey=`${dateStr}_${mealType}`;
   pendingItems=[];
@@ -692,12 +867,13 @@ window.openMealModal=(dateStr,mealType)=>{
   if(existing?.items) pendingItems=[...existing.items];
   document.getElementById('meal-modal-title').textContent=`${mealType} — ${dateStr}`;
   document.getElementById('qty-section').style.display='none';
-  document.getElementById('custom-name').value='';
-  document.getElementById('custom-cal').value='';
-  document.getElementById('custom-prot').value='';
-  document.getElementById('custom-cost').value='';
+  document.getElementById('c-name').value='';
+  document.getElementById('c-cal').value='';
+  document.getElementById('c-prot').value='';
+  document.getElementById('c-cost').value='';
+  document.getElementById('meal-delete-btn').style.display=existing?'block':'none';
   buildIngGrid();
-  renderAddedItems();
+  renderAdded();
   document.getElementById('meal-modal').classList.add('open');
 };
 
@@ -705,15 +881,15 @@ function buildIngGrid(){
   document.getElementById('ing-grid').innerHTML=ingredients.map(ing=>
     `<button class="ing-btn" onclick="selectIng('${ing.id}')">
       ${ing.name}
-      <div class="ing-meta">${ing.unit==='each'?`${ing.cal}kcal each`:`${ing.cal}kcal/100${ing.unit}`} · ${ing.protein}g pro</div>
+      <div class="ing-meta">${ing.unit==='each'?`${ing.cal}kcal each`:`${ing.cal}kcal/100${ing.unit}`} · ${ing.protein}g</div>
     </button>`
   ).join('');
 }
 
 window.selectIng=(id)=>{
   selectedIng=ingredients.find(i=>i.id===id);
-  document.querySelectorAll('.ing-btn').forEach(b=>b.classList.remove('selected'));
-  event.target.closest('.ing-btn').classList.add('selected');
+  document.querySelectorAll('.ing-btn').forEach(b=>b.classList.remove('sel'));
+  event.target.closest('.ing-btn').classList.add('sel');
   document.getElementById('qty-section').style.display='block';
   document.getElementById('qty-label').textContent=selectedIng.unit==='each'?`How many (${selectedIng.name}s)`:`Amount (${selectedIng.unit})`;
   document.getElementById('qty-input').value=selectedIng.defaultQty;
@@ -724,49 +900,50 @@ window.updatePreview=()=>{
   if(!selectedIng) return;
   const qty=parseFloat(document.getElementById('qty-input').value)||0;
   const r=calcItem(selectedIng,qty);
-  document.getElementById('food-preview-text').textContent=`${Math.round(r.cal)} kcal · ${Math.round(r.protein)}g protein · ~$${r.cost.toFixed(2)}`;
+  document.getElementById('food-preview').textContent=`${Math.round(r.cal)} kcal · ${Math.round(r.protein)}g protein · ~$${r.cost.toFixed(2)}`;
 };
 
-window.addItemToMeal=()=>{
+window.addItem=()=>{
   if(!selectedIng) return;
   const qty=parseFloat(document.getElementById('qty-input').value)||0;
   const r=calcItem(selectedIng,qty);
   pendingItems.push({name:`${selectedIng.name}${selectedIng.unit!=='each'?' ('+qty+selectedIng.unit+')':qty>1?' x'+qty:''}`,cal:r.cal,protein:r.protein,cost:r.cost,ingId:selectedIng.id,qty});
   document.getElementById('qty-section').style.display='none';
-  document.querySelectorAll('.ing-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.ing-btn').forEach(b=>b.classList.remove('sel'));
   selectedIng=null;
-  renderAddedItems();
+  renderAdded();
 };
 
-window.addCustomItem=()=>{
-  const name=document.getElementById('custom-name').value;
-  const cal=parseFloat(document.getElementById('custom-cal').value)||0;
-  const protein=parseFloat(document.getElementById('custom-prot').value)||0;
-  const cost=parseFloat(document.getElementById('custom-cost').value)||0;
+window.addCustom=()=>{
+  const name=document.getElementById('c-name').value;
+  const cal=parseFloat(document.getElementById('c-cal').value)||0;
+  const protein=parseFloat(document.getElementById('c-prot').value)||0;
+  const cost=parseFloat(document.getElementById('c-cost').value)||0;
   if(!name||cal===0) return;
   pendingItems.push({name,cal,protein,cost,custom:true});
-  document.getElementById('custom-name').value='';
-  document.getElementById('custom-cal').value='';
-  document.getElementById('custom-prot').value='';
-  document.getElementById('custom-cost').value='';
-  renderAddedItems();
+  document.getElementById('c-name').value='';
+  document.getElementById('c-cal').value='';
+  document.getElementById('c-prot').value='';
+  document.getElementById('c-cost').value='';
+  renderAdded();
 };
 
-window.removeItem=(idx)=>{pendingItems.splice(idx,1);renderAddedItems();};
+window.removeItem=(idx)=>{pendingItems.splice(idx,1);renderAdded();};
 
-function renderAddedItems(){
-  const section=document.getElementById('added-items-section');
-  if(!pendingItems.length){section.style.display='none';return;}
-  section.style.display='block';
-  document.getElementById('added-items-list').innerHTML=pendingItems.map((item,i)=>
+function renderAdded(){
+  const sec=document.getElementById('added-section');
+  if(!pendingItems.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  document.getElementById('added-list').innerHTML=pendingItems.map((item,i)=>
     `<div class="added-item">
-      <div><div class="added-item-name">${item.name}</div><div class="added-item-meta">${Math.round(item.cal)} kcal · ${Math.round(item.protein)}g protein</div></div>
-      <button class="btn-remove" onclick="removeItem(${i})">✕</button>
+      <div><div class="ai-name">${item.name}</div><div class="ai-meta">${Math.round(item.cal)} kcal · ${Math.round(item.protein)}g protein · $${item.cost.toFixed(2)}</div></div>
+      <button class="btn-rm" onclick="removeItem(${i})">✕</button>
     </div>`
   ).join('');
   const tC=pendingItems.reduce((s,i)=>s+i.cal,0);
   const tP=pendingItems.reduce((s,i)=>s+i.protein,0);
-  document.getElementById('meal-running-total').textContent=`Running total: ${Math.round(tC)} kcal · ${Math.round(tP)}g protein`;
+  const tCo=pendingItems.reduce((s,i)=>s+i.cost,0);
+  document.getElementById('running-total').textContent=`Total: ${Math.round(tC)} kcal · ${Math.round(tP)}g protein · $${tCo.toFixed(2)}`;
 }
 
 window.saveMeal=async()=>{
@@ -774,56 +951,106 @@ window.saveMeal=async()=>{
   const totCal=pendingItems.reduce((s,i)=>s+i.cal,0);
   const totProt=pendingItems.reduce((s,i)=>s+i.protein,0);
   const totCost=pendingItems.reduce((s,i)=>s+i.cost,0);
-  const parts=currentMealKey.split('_');
-  const dateStr=parts[0], mealType=parts.slice(1).join('_');
+  const [dateStr,...rest]=currentMealKey.split('_');
+  const mealType=rest.join('_');
 
-  // AI naming
+  // AI naming (only if API key available)
   let aiName=mealType;
-  try{
-    const itemNames=pendingItems.map(i=>i.name).join(', ');
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:15,messages:[{role:'user',content:`2-3 word meal name for: ${itemNames}. Just the name.`}]})});
-    const data=await res.json();
-    aiName=data.content?.[0]?.text?.trim()||mealType;
-  }catch(e){}
+  if(apiKey){
+    try{
+      const itemNames=pendingItems.map(i=>i.name).join(', ');
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:15,messages:[{role:'user',content:`2-3 word meal name for: ${itemNames}. Just the name.`}]})});
+      const data=await res.json();
+      aiName=data.content?.[0]?.text?.trim()||mealType;
+    }catch(e){}
+  }
 
   const mealData={uid:currentUser.uid,date:dateStr,mealType,items:pendingItems,cal:totCal,protein:totProt,cost:totCost,aiName,ts:new Date().toISOString()};
   const existing=weekMeals[currentMealKey];
+
   if(existing?.docId){
     await updateDoc(doc(db,'meals2',existing.docId),mealData);
     mealData.docId=existing.docId;
+    // Update linked expense
+    try{
+      const eq=query(collection(db,'expenses'),where('uid','==',currentUser.uid),where('mealKey','==',`meal_${currentMealKey}`));
+      const eSnap=await getDocs(eq);
+      if(!eSnap.empty) await updateDoc(doc(db,'expenses',eSnap.docs[0].id),{name:aiName,amount:totCost,ts:new Date().toISOString()});
+      else if(totCost>0) await addDoc(collection(db,'expenses'),{name:aiName,amount:totCost,uid:currentUser.uid,month:monthKey(),mealKey:`meal_${currentMealKey}`,ts:new Date().toISOString()});
+    }catch(e){}
   }else{
     const ref=await addDoc(collection(db,'meals2'),mealData);
     mealData.docId=ref.id;
+    if(totCost>0) await addDoc(collection(db,'expenses'),{name:aiName,amount:totCost,uid:currentUser.uid,month:monthKey(),mealKey:`meal_${currentMealKey}`,ts:new Date().toISOString()});
   }
-  // Always log expense for the meal slot (update if exists, create if not)
-  // Use a deterministic expense key based on meal slot so we don't double-count
-  if(totCost>0){
-    // Check if expense already exists for this meal slot
-    const expKey=`meal_${currentMealKey}`;
-    try{
-      const expQ=query(collection(db,'expenses'),where('uid','==',currentUser.uid),where('mealKey','==',expKey));
-      const expSnap=await getDocs(expQ);
-      if(!expSnap.empty){
-        await updateDoc(doc(db,'expenses',expSnap.docs[0].id),{name:aiName,amount:totCost,month:monthKey(),ts:new Date().toISOString()});
-      }else{
-        await addDoc(collection(db,'expenses'),{name:aiName,amount:totCost,uid:currentUser.uid,month:monthKey(),mealKey:expKey,ts:new Date().toISOString()});
-      }
-    }catch(e){
-      await addDoc(collection(db,'expenses'),{name:aiName,amount:totCost,uid:currentUser.uid,month:monthKey(),mealKey:expKey,ts:new Date().toISOString()});
-    }
-    await loadMonthExpenses();
-  }
+
   weekMeals[currentMealKey]=mealData;
   closeModal('meal-modal');
+  await loadMonthExpenses();
   buildGrid();
   renderTotals();
   renderBudget();
   fetchAiRec();
 };
 
-// WORKOUT
-window.openAddWorkout=()=>{
-  document.getElementById('exercise-name').value='';
+window.deleteMeal=async()=>{
+  if(!currentMealKey||!weekMeals[currentMealKey]) return;
+  const existing=weekMeals[currentMealKey];
+  if(!confirm(`Delete this ${existing.mealType}?`)) return;
+  if(existing.docId) await deleteDoc(doc(db,'meals2',existing.docId));
+  // Delete linked expense
+  try{
+    const eq=query(collection(db,'expenses'),where('uid','==',currentUser.uid),where('mealKey','==',`meal_${currentMealKey}`));
+    const eSnap=await getDocs(eq);
+    for(const d of eSnap.docs) await deleteDoc(doc(db,'expenses',d.id));
+  }catch(e){}
+  delete weekMeals[currentMealKey];
+  closeModal('meal-modal');
+  await loadMonthExpenses();
+  buildGrid();
+  renderTotals();
+  renderBudget();
+};
+
+// ── DELETE ZONE ───────────────────────────────────────────────────
+window.deleteThisWeek=async()=>{
+  if(!confirm('Delete all meals from this week?')) return;
+  const dates=getWeekDates();
+  const startKey=dateKey(dates[0]),endKey=dateKey(dates[6]);
+  const q=query(collection(db,'meals2'),where('uid','==',currentUser.uid),where('date','>=',startKey),where('date','<=',endKey));
+  const snap=await getDocs(q);
+  for(const d of snap.docs) await deleteDoc(doc(db,'meals2',d.id));
+  await loadWeekMeals();
+  buildGrid();
+  renderTotals();
+  alert('This week deleted.');
+};
+
+window.deleteAllMeals=async()=>{
+  if(!confirm('Delete ALL meal data? This cannot be undone.')) return;
+  const q=query(collection(db,'meals2'),where('uid','==',currentUser.uid));
+  const snap=await getDocs(q);
+  for(const d of snap.docs) await deleteDoc(doc(db,'meals2',d.id));
+  weekMeals={};
+  buildGrid();
+  renderTotals();
+  alert('All meals deleted.');
+};
+
+window.deleteAllExpenses=async()=>{
+  if(!confirm('Delete ALL expense data?')) return;
+  const q=query(collection(db,'expenses'),where('uid','==',currentUser.uid));
+  const snap=await getDocs(q);
+  for(const d of snap.docs) await deleteDoc(doc(db,'expenses',d.id));
+  await loadMonthExpenses();
+  renderBudget();
+  renderTotals();
+  alert('All expenses deleted.');
+};
+
+// ── WORKOUT ───────────────────────────────────────────────────────
+window.openWorkoutModal=()=>{
+  document.getElementById('ex-name').value='';
   document.getElementById('sets-builder').innerHTML='';
   setCount=0;
   addSetRow();
@@ -833,13 +1060,13 @@ window.addSetRow=()=>{
   setCount++;
   const r=document.createElement('div');
   r.className='set-row';
-  r.innerHTML=`<span class="set-label">Set ${setCount}</span><input type="number" placeholder="kg" min="0" class="set-weight" /><input type="number" placeholder="reps" min="1" class="set-reps" />`;
+  r.innerHTML=`<span class="set-label">Set ${setCount}</span><input type="number" placeholder="kg" min="0" class="sw"/><input type="number" placeholder="reps" min="1" class="sr"/>`;
   document.getElementById('sets-builder').appendChild(r);
 };
 window.logWorkout=async()=>{
-  const name=document.getElementById('exercise-name').value;
+  const name=document.getElementById('ex-name').value;
   if(!name) return;
-  const ws=document.querySelectorAll('.set-weight'),rs=document.querySelectorAll('.set-reps');
+  const ws=document.querySelectorAll('.sw'),rs=document.querySelectorAll('.sr');
   const sets=[];
   ws.forEach((w,i)=>{const wt=parseFloat(w.value)||0,rep=parseInt(rs[i].value)||0;if(rep>0)sets.push({weight:wt,reps:rep});});
   if(!sets.length) return;
@@ -849,17 +1076,20 @@ window.logWorkout=async()=>{
 };
 function renderWorkoutList(){
   const el=document.getElementById('workout-list');
-  if(!todayWorkouts.length){el.innerHTML='<div class="empty-state">No exercises logged yet.</div>';return;}
-  el.innerHTML=todayWorkouts.map(w=>`<div class="workout-entry"><div class="workout-name">${w.name}</div><div class="workout-sets">${w.sets.map((s,i)=>`Set ${i+1}: ${s.weight}kg × ${s.reps}`).join(' · ')}</div></div>`).join('');
-}
-function renderGymPage(){
-  const s=SCHEDULE[new Date().getDay()];
-  document.getElementById('gym-day-label').textContent=s.label;
-  document.getElementById('gym-recommended').innerHTML=s.exercises.length?s.exercises.map(e=>`• ${e}`).join('<br>'):'<span style="color:var(--muted)">Rest day. Recover and sleep.</span>';
+  if(!todayWorkouts.length){el.innerHTML='<div class="empty-state">No exercises logged today.</div>';return;}
+  el.innerHTML=todayWorkouts.map(w=>`
+    <div class="workout-entry">
+      <div class="workout-name">${w.name}</div>
+      <div class="workout-sets">${w.sets.map((s,i)=>`Set ${i+1}: ${s.weight}kg × ${s.reps}`).join(' · ')}</div>
+    </div>`).join('');
 }
 
-// EXPENSE
-window.openAddExpense=()=>{document.getElementById('exp-name').value='';document.getElementById('exp-amount').value='';document.getElementById('expense-modal').classList.add('open');};
+// ── EXPENSE ───────────────────────────────────────────────────────
+window.openExpenseModal=()=>{
+  document.getElementById('exp-name').value='';
+  document.getElementById('exp-amount').value='';
+  document.getElementById('expense-modal').classList.add('open');
+};
 window.logExpense=async()=>{
   const name=document.getElementById('exp-name').value;
   const amount=parseFloat(document.getElementById('exp-amount').value);
@@ -873,58 +1103,68 @@ window.logExpense=async()=>{
 function renderBudget(){
   const ms=getMonthSpend(),bg=userSettings.budgetMonthly;
   const left=Math.max(0,bg-ms),pct=Math.min(100,ms/bg*100);
-  document.getElementById('set-budget-spent').textContent=`$${ms.toFixed(2)} spent`;
-  document.getElementById('set-budget-left').textContent=`$${left.toFixed(2)} left`;
-  document.getElementById('set-budget-bar').style.width=pct+'%';
-  document.getElementById('set-budget-bar').style.background=pct>90?'var(--danger)':pct>70?'#ffb84d':'var(--accent)';
+  document.getElementById('s-budget-spent').textContent=`$${ms.toFixed(2)} spent`;
+  document.getElementById('s-budget-left').textContent=`$${left.toFixed(2)} left`;
+  document.getElementById('s-budget-bar').style.width=pct+'%';
+  document.getElementById('s-budget-bar').style.background=pct>90?'var(--danger)':pct>70?'#f0a444':'var(--accent)';
   const el=document.getElementById('expense-list');
   if(!monthExpenses.length){el.innerHTML='<div class="empty-state">No expenses logged.</div>';return;}
-  el.innerHTML=monthExpenses.map(e=>`<div class="expense-entry"><div><div class="expense-name">${e.name}</div><div class="expense-meta">${new Date(e.ts).toLocaleDateString()}</div></div><div class="expense-amount">$${e.amount.toFixed(2)}</div></div>`).join('');
+  el.innerHTML=monthExpenses.map(e=>`
+    <div class="expense-entry">
+      <div><div class="exp-name">${e.name}</div><div class="exp-meta">${new Date(e.ts).toLocaleDateString()}</div></div>
+      <div class="exp-amount">$${e.amount.toFixed(2)}</div>
+    </div>`).join('');
 }
 
-// SETTINGS
-function renderSettingsIngredients(){
-  document.getElementById('ingredient-settings-list').innerHTML=ingredients.map(ing=>
-    `<div class="setting-row">
-      <div><div class="setting-label">${ing.name}</div><div class="setting-sub">per ${ing.unit==='each'?'unit':'100'+ing.unit}</div></div>
-      <div style="display:flex;gap:0.4rem">
-        <div style="text-align:right"><input class="setting-input" style="width:62px" type="number" id="ic-${ing.id}" value="${ing.cal}" /><div style="font-family:var(--mono);font-size:1rem;color:var(--muted)">kcal</div></div>
-        <div style="text-align:right"><input class="setting-input" style="width:62px" type="number" id="ip-${ing.id}" value="${ing.protein}" step="0.1" /><div style="font-family:var(--mono);font-size:1rem;color:var(--muted)">prot g</div></div>
+// ── SETTINGS ─────────────────────────────────────────────────────
+function renderIngSettings(){
+  document.getElementById('ing-settings-list').innerHTML=ingredients.map(ing=>`
+    <div class="ing-setting-row">
+      <div>
+        <div class="ing-setting-name">${ing.name}</div>
+        <div class="ing-setting-sub">per ${ing.unit==='each'?'unit':'100'+ing.unit}</div>
       </div>
-    </div>`
-  ).join('');
+      <div class="ing-input-grp"><input class="small-input" type="number" id="ic-${ing.id}" value="${ing.cal}"/><div class="ing-input-label">kcal</div></div>
+      <div class="ing-input-grp"><input class="small-input" type="number" id="ip-${ing.id}" value="${ing.protein}" step="0.1"/><div class="ing-input-label">protein</div></div>
+    </div>`).join('');
 }
 window.saveSettings=async()=>{
   userSettings.calorieGoal=parseInt(document.getElementById('set-cal').value)||2200;
   userSettings.proteinGoal=parseInt(document.getElementById('set-prot').value)||135;
   userSettings.budgetMonthly=parseFloat(document.getElementById('set-budget').value)||250;
+  apiKey=document.getElementById('api-key-input').value.trim();
+  if(apiKey) localStorage.setItem('hs-apikey',apiKey);
   ingredients=ingredients.map(ing=>({...ing,cal:parseFloat(document.getElementById(`ic-${ing.id}`)?.value)||ing.cal,protein:parseFloat(document.getElementById(`ip-${ing.id}`)?.value)||ing.protein}));
   await updateDoc(doc(db,'users',currentUser.uid),{calorieGoal:userSettings.calorieGoal,proteinGoal:userSettings.proteinGoal,budgetMonthly:userSettings.budgetMonthly,ingredients});
-  renderTotals();renderBudget();renderSettingsIngredients();
+  renderTotals();
+  renderBudget();
+  renderIngSettings();
   alert('Saved!');
 };
 
-// AI CHAT
-function buildSystemPrompt(){
+// ── AI CHAT ───────────────────────────────────────────────────────
+function buildSysPrompt(){
   const t=getTodayTotals(),ms=getMonthSpend(),day=new Date().getDay();
-  return `You are the Health Savvy AI for Satvik. Profile: 18yo ECE student UofT, 76kg, 174cm. Goals: build muscle, lose belly fat, get rid of man boobs. Taekwondo background 7 years. Daily targets: ${userSettings.calorieGoal} kcal, ${userSettings.proteinGoal}g protein. Monthly budget: $${userSettings.budgetMonthly} CAD. Sleep: 12am to 7:30am. Today: ${Math.round(t.cal)} kcal eaten, ${Math.round(t.protein)}g protein eaten, $${ms.toFixed(2)} spent this month. Today's workout: ${SCHEDULE[day].label}. Available: ${ingredients.map(i=>i.name).join(', ')}. Be direct, specific, use numbers. No em dashes.`;
+  const schedIdx=day===0?6:day-1;
+  return `You are the Health Savvy AI for Satvik. Profile: 18yo ECE student UofT, 76kg, 174cm. Goals: build muscle, lose belly fat, fix man boobs, improve posture. Taekwondo background 7 years. Daily targets: ${userSettings.calorieGoal} kcal, ${userSettings.proteinGoal}g protein. Monthly budget: $${userSettings.budgetMonthly} CAD. Sleep: 12am to 7:30am. Today: ${Math.round(t.cal)} kcal eaten, ${Math.round(t.protein)}g protein eaten, $${ms.toFixed(2)} spent this month. Today's workout: ${SCHEDULE[schedIdx].day} - ${SCHEDULE[schedIdx].type}. Available: ${ingredients.map(i=>i.name).join(', ')}. Be direct, specific, use numbers. No em dashes.`;
 }
 window.sendChat=async()=>{
   const input=document.getElementById('chat-input');
   const msg=input.value.trim();
   if(!msg) return;
+  if(!apiKey){appendChat('Please add your Anthropic API key in Settings first.','ai');return;}
   input.value='';
   appendChat(msg,'user');
   chatHistory.push({role:'user',content:msg});
   const loading=appendChat('Thinking...','ai loading');
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:buildSystemPrompt(),messages:chatHistory})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:buildSysPrompt(),messages:chatHistory})});
     const data=await res.json();
     const reply=data.content?.[0]?.text||'Something went wrong.';
     loading.remove();
     appendChat(reply,'ai');
     chatHistory.push({role:'assistant',content:reply});
-  }catch(e){loading.remove();appendChat('Connection error.','ai');}
+  }catch(e){loading.remove();appendChat('Connection error. Check your API key.','ai');}
 };
 function appendChat(text,cls){
   const c=document.getElementById('chat-messages');
@@ -937,25 +1177,16 @@ function appendChat(text,cls){
 }
 window.handleChatKey=(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}};
 
-// THEME
-window.setTheme=(theme)=>{
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('hs-theme', theme);
-  document.getElementById('theme-dark-btn').style.background = theme==='dark' ? 'var(--accent)' : 'var(--surface2)';
-  document.getElementById('theme-dark-btn').style.color = theme==='dark' ? '#000' : 'var(--text)';
-  document.getElementById('theme-light-btn').style.background = theme==='light' ? 'var(--accent)' : 'var(--surface2)';
-  document.getElementById('theme-light-btn').style.color = theme==='light' ? '#000' : 'var(--text)';
-};
-(()=>{ const saved=localStorage.getItem('hs-theme')||'dark'; setTheme(saved); })();
-
-// NAV
+// ── NAV ───────────────────────────────────────────────────────────
 window.switchPage=(page,btn)=>{
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(`page-${page}`).classList.add('active');
   btn.classList.add('active');
-  if(page==='settings'){renderBudget();renderSettingsIngredients();}
+  if(page==='settings'){renderBudget();renderIngSettings();}
 };
+
+// ── MODALS ────────────────────────────────────────────────────────
 window.closeModal=(id)=>document.getElementById(id).classList.remove('open');
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 </script>
@@ -964,6 +1195,8 @@ document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
+// Apply saved theme immediately before render
+(()=>{const t=localStorage.getItem('hs-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
 </script>
 </body>
 </html>
