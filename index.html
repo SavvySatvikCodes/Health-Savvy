@@ -648,7 +648,7 @@ async function loadMonthExpenses(){
 async function callGemini(prompt,maxTokens=400){
   if(!apiKey)return null;
   try{
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens}})
     });
@@ -972,7 +972,13 @@ window.saveSettings=async()=>{
       };
     });
     // Use setDoc with merge to handle both new and existing users
-    await setDoc(doc(db,'users',currentUser.uid),{calorieGoal:userSettings.calorieGoal,proteinGoal:userSettings.proteinGoal,budgetMonthly:userSettings.budgetMonthly,ingredients},{merge:true});
+    const cleanIngredients=JSON.parse(JSON.stringify(ingredients.map(ing=>({
+      id:String(ing.id||''),name:String(ing.name||''),
+      cal:parseFloat(ing.cal)||0,protein:parseFloat(ing.protein)||0,
+      unit:String(ing.unit||'g'),defaultQty:parseFloat(ing.defaultQty)||100,
+      cost100:parseFloat(ing.cost100)||0
+    }))));
+    await setDoc(doc(db,'users',currentUser.uid),{calorieGoal:userSettings.calorieGoal,proteinGoal:userSettings.proteinGoal,budgetMonthly:userSettings.budgetMonthly,ingredients:cleanIngredients},{merge:true});
     renderTotals();renderBudget();renderIngSettings();
     if(k&&!recFetched){recFetched=true;fetchRecOnce();}
     showToast('Settings saved ✓');
