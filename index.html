@@ -648,7 +648,7 @@ async function loadMonthExpenses(){
 async function callGemini(prompt,maxTokens=400){
   if(!apiKey)return null;
   try{
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens}})
     });
@@ -954,17 +954,32 @@ window.addNewIngredient=()=>{
 };
 
 window.saveSettings=async()=>{
-  userSettings.calorieGoal=parseInt(document.getElementById('set-cal').value)||2200;
-  userSettings.proteinGoal=parseInt(document.getElementById('set-prot').value)||135;
-  userSettings.budgetMonthly=parseFloat(document.getElementById('set-budget').value)||250;
-  const k=document.getElementById('api-key-input').value.trim();
-  if(k){apiKey=k;localStorage.setItem('hs-apikey',apiKey);}
-  ingredients=ingredients.map(ing=>({...ing,cal:parseFloat(document.getElementById(`ic-${ing.id}`)?.value)||ing.cal,protein:parseFloat(document.getElementById(`ip-${ing.id}`)?.value)||ing.protein,cost100:parseFloat(document.getElementById(`ipr-${ing.id}`)?.value)||ing.cost100}));
-  await updateDoc(doc(db,'users',currentUser.uid),{calorieGoal:userSettings.calorieGoal,proteinGoal:userSettings.proteinGoal,budgetMonthly:userSettings.budgetMonthly,ingredients});
-  renderTotals();renderBudget();renderIngSettings();
-  // If key was just added, fetch rec now
-  if(k&&!recFetched){recFetched=true;fetchRecOnce();}
-  showToast('Settings saved ✓');
+  try{
+    userSettings.calorieGoal=parseInt(document.getElementById('set-cal')?.value)||2200;
+    userSettings.proteinGoal=parseInt(document.getElementById('set-prot')?.value)||135;
+    userSettings.budgetMonthly=parseFloat(document.getElementById('set-budget')?.value)||250;
+    const k=document.getElementById('api-key-input')?.value.trim()||'';
+    if(k){apiKey=k;localStorage.setItem('hs-apikey',apiKey);}
+    // Only update ingredient values from DOM if those inputs exist
+    ingredients=ingredients.map(ing=>{
+      const calEl=document.getElementById('ic-'+ing.id);
+      const protEl=document.getElementById('ip-'+ing.id);
+      const costEl=document.getElementById('ipr-'+ing.id);
+      return {...ing,
+        cal:calEl?parseFloat(calEl.value)||ing.cal:ing.cal,
+        protein:protEl?parseFloat(protEl.value)||ing.protein:ing.protein,
+        cost100:costEl?parseFloat(costEl.value)||ing.cost100:ing.cost100
+      };
+    });
+    // Use setDoc with merge to handle both new and existing users
+    await setDoc(doc(db,'users',currentUser.uid),{calorieGoal:userSettings.calorieGoal,proteinGoal:userSettings.proteinGoal,budgetMonthly:userSettings.budgetMonthly,ingredients},{merge:true});
+    renderTotals();renderBudget();renderIngSettings();
+    if(k&&!recFetched){recFetched=true;fetchRecOnce();}
+    showToast('Settings saved ✓');
+  }catch(e){
+    console.log('saveSettings err',e);
+    showToast('Error saving: '+e.message);
+  }
 };
 
 window.switchStab=(n)=>{for(let i=0;i<3;i++){document.getElementById(`stab-${i}`).style.display=i===n?'block':'none';document.getElementById(`stab-btn-${i}`).classList.toggle('active',i===n);}if(n===0)renderIngSettings();};
