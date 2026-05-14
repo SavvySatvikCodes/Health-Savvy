@@ -645,17 +645,27 @@ async function loadMonthExpenses(){
 }
 
 // ── GEMINI ───────────────────────────────────────────────────────
+const GEMINI_MODELS=[
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent',
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+];
 async function callGemini(prompt,maxTokens=400){
   if(!apiKey)return null;
-  try{
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens}})
-    });
-    if(!res.ok){const errText=await res.text();console.log('Gemini err',res.status,errText);let msg='AI error '+res.status;try{const errJ=JSON.parse(errText);msg=errJ?.error?.message||msg;}catch(e){}return '_ERR_:'+msg;}
-    const data=await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text||null;
-  }catch(e){console.log('gemini err',e);return null;}
+  for(const url of GEMINI_MODELS){
+    try{
+      const res=await fetch(`${url}?key=${apiKey}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens}})
+      });
+      if(res.status===404||res.status===400){continue;} // try next model
+      if(!res.ok){const errText=await res.text();let msg='AI error '+res.status;try{const errJ=JSON.parse(errText);msg=errJ?.error?.message||msg;}catch(e){}return '_ERR_:'+msg;}
+      const data=await res.json();
+      const text=data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if(text){console.log('Gemini ok with',url);return text;}
+    }catch(e){continue;}
+  }
+  return '_ERR_:No working Gemini model found for your API key. Try regenerating your key at aistudio.google.com.';
 }
 
 // Called ONCE per session
