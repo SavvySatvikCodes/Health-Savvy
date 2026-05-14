@@ -381,7 +381,10 @@
         <!-- Ingredients tab -->
         <div id="stab-0">
           <div class="ing-settings-grid" id="ing-settings-list"></div>
-          <button class="btn-save" style="margin-top:.5rem" onclick="saveSettings()">Save Changes</button>
+          <div style="display:flex;gap:.5rem;margin-top:.5rem">
+          <button class="btn-save" style="flex:2" onclick="saveSettings()">Save Changes</button>
+          <button onclick="resetIngredients()" style="flex:1;padding:.82rem;background:transparent;border:1px solid var(--muted);border-radius:var(--radius-sm);color:var(--muted);font-family:var(--font);font-size:.88rem;font-weight:600;cursor:pointer;">Reset to Defaults</button>
+        </div>
         </div>
 
         <!-- Goals & API tab -->
@@ -587,8 +590,8 @@ onAuthStateChanged(auth,async(user)=>{
     currentUser=user;
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app').style.display='block';
-    apiKey=localStorage.getItem('hs-apikey')||'';
-    document.getElementById('api-key-input').value=apiKey;
+    apiKey=localStorage.getItem('hs-apikey')||'AIzaSyC5wMd4K4Tj0Sd7UAQV7LiDZj0zyi7DbJ4';
+    document.getElementById('api-key-input').value=apiKey||'AIzaSyC5wMd4K4Tj0Sd7UAQV7LiDZj0zyi7DbJ4';
     setTheme(localStorage.getItem('hs-theme')||'dark');
     await initApp();
   }else{
@@ -620,7 +623,17 @@ async function loadUserSettings(){
       userSettings.calorieGoal=d.calorieGoal||2200;
       userSettings.proteinGoal=d.proteinGoal||135;
       userSettings.budgetMonthly=d.budgetMonthly||250;
-      if(d.ingredients&&d.ingredients.length)ingredients=d.ingredients;
+      if(d.ingredients&&d.ingredients.length){
+        // Merge saved ingredients with defaults to restore any missing cost100 values
+        ingredients=d.ingredients.map(saved=>{
+          const def=DEFAULT_INGREDIENTS.find(di=>di.id===saved.id);
+          return {...saved, cost100: (parseFloat(saved.cost100)||0)>0 ? parseFloat(saved.cost100) : (def?def.cost100:0)};
+        });
+        // Add any default ingredients that are completely missing
+        DEFAULT_INGREDIENTS.forEach(def=>{
+          if(!ingredients.find(i=>i.id===def.id)) ingredients.push({...def});
+        });
+      }
       document.getElementById('set-cal').value=userSettings.calorieGoal;
       document.getElementById('set-prot').value=userSettings.proteinGoal;
       document.getElementById('set-budget').value=userSettings.budgetMonthly;
@@ -680,7 +693,14 @@ async function fetchRecOnce(){
   const hour=new Date().getHours();
   const nextMeal=hour<11?'breakfast':hour<15?'lunch':'dinner';
   const ingNames=ingredients.map(i=>i.name).join(', ');
-  const rec=await callGemini(`Satvik needs ${Math.round(calLeft)} more kcal and ${Math.round(protLeft)}g more protein today. Available: ${ingNames}. Suggest a specific ${nextMeal} with amounts. 1-2 sentences max. No em dashes.`,150);
+  const todayMealsLogged=MEALS.filter(m=>allMeals[todayKey()+'_'+m]).length;
+  let recPrompt;
+  if(todayMealsLogged>=3||calLeft<=50){
+    recPrompt=`All of today's meals are logged. Suggest a specific breakfast for tomorrow using these ingredients: ${ingNames}. Include quantities. 1-2 sentences. No em dashes.`;
+  }else{
+    recPrompt=`Satvik needs ${Math.round(calLeft)} more kcal and ${Math.round(protLeft)}g more protein today. Available: ${ingNames}. Suggest a specific ${nextMeal} with quantities and estimated protein. 1-2 sentences. No em dashes.`;
+  }
+  const rec=await callGemini(recPrompt,150);
   if(rec&&rec.startsWith('_ERR_:')){
     el.className='rec-text';
     el.textContent='AI error: '+rec.replace('_ERR_:','');
@@ -880,6 +900,8 @@ window.saveMeal=async()=>{
   closeModal('meal-modal');buildGrid();renderTotals();
   await loadMonthExpenses();renderBudget();
   showToast('Meal saved');
+  // Refresh recommendation after every meal log
+  recFetched=false;fetchRecOnce();
 };
 
 window.deleteMeal=async()=>{
@@ -1017,6 +1039,13 @@ window.switchPage=(page,btn,btnId)=>{
 };
 
 window.refreshRec=()=>{recFetched=false;recText='';fetchRecOnce();};
+window.resetIngredients=async()=>{
+  if(!confirm('Reset all ingredients to defaults? Your custom ingredients will be lost.'))return;
+  ingredients=[...DEFAULT_INGREDIENTS];
+  renderIngSettings();
+  await saveSettings();
+  showToast('Ingredients reset to defaults');
+};
 window.closeModal=(id)=>document.getElementById(id).classList.remove('open');
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 </script>
