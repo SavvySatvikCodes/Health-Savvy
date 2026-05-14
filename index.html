@@ -101,7 +101,7 @@
     .empty-state{text-align:center;padding:1.5rem 1rem;color:var(--muted);font-family:var(--mono);font-size:.82rem;}
     .progress-bar{height:5px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-top:.4rem;}
     .progress-fill{height:100%;border-radius:99px;transition:width .4s ease;}
-    .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-family:var(--mono);font-size:.82rem;padding:.6rem 1.2rem;border-radius:99px;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+    .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-family:var(--mono);font-size:.82rem;padding:.6rem 1.2rem;border-radius:99px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.3);}
     .toast.show{opacity:1;}
 
     /* ── TODAY PAGE ── */
@@ -327,7 +327,10 @@
           </div>
         </div>
         <div class="rec-card" id="rec-card" style="display:none">
-          <div class="rec-label">✦ Next Meal Suggestion</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
+            <div class="rec-label" style="margin:0">✦ Next Meal Suggestion</div>
+            <button onclick="refreshRec()" style="background:none;border:none;color:var(--accent);font-family:var(--mono);font-size:.72rem;cursor:pointer;">↺ refresh</button>
+          </div>
           <div class="rec-text" id="rec-text"></div>
         </div>
         <div class="week-nav">
@@ -649,7 +652,7 @@ async function callGemini(prompt,maxTokens=400){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens}})
     });
-    if(!res.ok){const err=await res.text();console.log('Gemini err',res.status,err);return null;}
+    if(!res.ok){const errText=await res.text();console.log('Gemini err',res.status,errText);let msg='AI error '+res.status;try{const errJ=JSON.parse(errText);msg=errJ?.error?.message||msg;}catch(e){}return '_ERR_:'+msg;}
     const data=await res.json();
     return data.candidates?.[0]?.content?.parts?.[0]?.text||null;
   }catch(e){console.log('gemini err',e);return null;}
@@ -668,9 +671,14 @@ async function fetchRecOnce(){
   const nextMeal=hour<11?'breakfast':hour<15?'lunch':'dinner';
   const ingNames=ingredients.map(i=>i.name).join(', ');
   const rec=await callGemini(`Satvik needs ${Math.round(calLeft)} more kcal and ${Math.round(protLeft)}g more protein today. Available: ${ingNames}. Suggest a specific ${nextMeal} with amounts. 1-2 sentences max. No em dashes.`,150);
+  if(rec&&rec.startsWith('_ERR_:')){
+    el.className='rec-text';
+    el.textContent='AI error: '+rec.replace('_ERR_:','');
+    return;
+  }
   recText=rec||'';
   el.className='rec-text';
-  el.textContent=recText||'Add your Gemini API key in Settings to get recommendations.';
+  el.textContent=recText||'Add your Gemini API key in Settings → Goals & API to get recommendations.';
 }
 
 // ── GRID ─────────────────────────────────────────────────────────
@@ -822,7 +830,7 @@ window.parseNlp=async()=>{
   const ingList=ingredients.map(i=>`${i.name}:${i.unit==='each'?`${i.cal}cal/${i.protein}g each`:`${i.cal}cal/${i.protein}g per 100${i.unit}`}`).join(';');
   const prompt=`Parse this food: "${text}". Known ingredients: ${ingList}. Return ONLY a JSON array like [{"name":"Egg x4","cal":248,"protein":20.8,"cost":1.22}]. Calculate based on quantities. Estimate if not in list. No markdown, no explanation.`;
   const res=await callGemini(prompt,300);
-  if(!res){statusEl.textContent='Could not parse. Add items manually.';return;}
+  if(!res||res.startsWith('_ERR_:')){statusEl.textContent=res?'AI: '+res.replace('_ERR_:',''):'Could not reach AI. Check your key.';return;}
   try{
     const clean=res.replace(/```json|```/g,'').trim();
     const items=JSON.parse(clean);
@@ -954,7 +962,9 @@ window.saveSettings=async()=>{
   ingredients=ingredients.map(ing=>({...ing,cal:parseFloat(document.getElementById(`ic-${ing.id}`)?.value)||ing.cal,protein:parseFloat(document.getElementById(`ip-${ing.id}`)?.value)||ing.protein,cost100:parseFloat(document.getElementById(`ipr-${ing.id}`)?.value)||ing.cost100}));
   await updateDoc(doc(db,'users',currentUser.uid),{calorieGoal:userSettings.calorieGoal,proteinGoal:userSettings.proteinGoal,budgetMonthly:userSettings.budgetMonthly,ingredients});
   renderTotals();renderBudget();renderIngSettings();
-  showToast('Settings saved');
+  // If key was just added, fetch rec now
+  if(k&&!recFetched){recFetched=true;fetchRecOnce();}
+  showToast('Settings saved ✓');
 };
 
 window.switchStab=(n)=>{for(let i=0;i<3;i++){document.getElementById(`stab-${i}`).style.display=i===n?'block':'none';document.getElementById(`stab-btn-${i}`).classList.toggle('active',i===n);}if(n===0)renderIngSettings();};
@@ -975,6 +985,7 @@ window.switchPage=(page,btn,btnId)=>{
   if(page==='budget')renderBudget();
 };
 
+window.refreshRec=()=>{recFetched=false;recText='';fetchRecOnce();};
 window.closeModal=(id)=>document.getElementById(id).classList.remove('open');
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 </script>
